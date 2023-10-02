@@ -1,0 +1,11 @@
+{% extends "layout.html.twig" %}
+
+{% block body %}
+  <form method="post" action="{{ url_for('paypal')}}" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="importPaypal" class="form-label">Import Paypal</label>
+      <input type="file" class="form-control" id="importPaypal" name="importPaypal">
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+    </div>
+  </form>
+{% endblock %}
