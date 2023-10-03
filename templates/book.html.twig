@@ -1,6 +1,86 @@
 {% extends "layout.html.twig" %}
 
 {% block body %}
-  Home,<br />
-  Hello {{ name }}!
+  <table id="book" class="table table-striped" style="width:100%">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Nom</th>
+        <th>Libellé</th>
+        <th>Débit</th>
+        <th>Crédit</th>
+        <th>Ventilation</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th></th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Nom</th>
+        <th>Libellé</th>
+        <th>Débit</th>
+        <th>Crédit</th>
+        <th>Ventilation</th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <script type="text/javascript">
+    function moneyFormat(data) {
+      if (!data) {
+        return '';
+      }
+      return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(data);
+    }
+    new DataTable('#book', {
+      ajax: '{{ url_for('lines')}}',
+      processing: true,
+      serverSide: true,
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json',
+      },
+      order: [[2, 'asc']],
+      pageLength: 20,
+      columns: [
+        {data: 'id', render: function(data, type, row) {
+          let url = '{{ url_for('line', {'id': 0}) }}';
+          url = url.replace('0', data);
+          return '<a href="'+url+'">Editer</a>';
+        }},
+        {data: 'type'},
+        {data: 'date', 
+          render: function(data, type, row) {
+            const date = new Date(data.date);
+            return dateFns.format(date, 'DD/MM/YYYY');
+          }
+        },
+        {data: 'name'},
+        {data: 'label'},
+        {
+          data: 'debit', 
+          className: 'dt-right font-weight-bold',
+          render : function (data) {
+            return '<strong>'+moneyFormat(data)+'</strong>';
+          }
+        },
+        {
+          data: 'credit',
+          className: 'dt-right font-weight-bold',
+          render : function (data) {
+            return '<strong>'+moneyFormat(data)+'</strong>';
+          }
+        },
+        {
+          data: 'breakdown',
+          render: function (data) {
+            console.log('breakdown', data);
+            return data.length > 0 ? '<span style="color: green;">&check;</span>' : '<span style="color: red;">&cross;</span>';
+          }
+        }
+      ]
+  });
+  </script>
 {% endblock %}

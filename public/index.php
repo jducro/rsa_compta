@@ -17,6 +17,7 @@ use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Twig\Extra\Intl\IntlExtension;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -53,6 +54,7 @@ $middleware($app);
 
 // Add Twig-View Middleware
 $twig = Twig::create(__DIR__ . '/../templates', ['cache' => false]);
+$twig->addExtension(new IntlExtension());
 $app->add(TwigMiddleware::create($app, $twig));
 
 $container->set('view', $twig);

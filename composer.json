@@ -31,6 +31,7 @@
         "slim/slim": "^4.10",
         "slim/twig-view": "^3.3",
         "symfony/cache": "^6.3",
+        "twig/intl-extra": "^3.7",
         "uma/dic": "^2.0"
     },
     "require-dev": {
@@ -59,7 +60,7 @@
         }
     },
     "scripts": {
-        "start": "php -S localhost:8080 -t public",
+        "start": "php -S localhost:9000 -t public",
         "test": "phpunit"
     }
 }

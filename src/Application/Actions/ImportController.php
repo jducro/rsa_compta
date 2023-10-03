@@ -3,6 +3,8 @@
 namespace App\Application\Actions;
 
 use App\Services\PaypalImportService;
+use App\Services\SGImportService;
+use App\Services\SogecomImportService;
 use Psr\Container\ContainerInterface;
 
 class ImportController
@@ -21,10 +23,37 @@ class ImportController
       $files = $request->getUploadedFiles();
 
       $csv = $files['importPaypal'];
-      $firstLine = true;
       if ($csv->getError() === UPLOAD_ERR_OK) {
         if ($handle = fopen($csv->getFilePath(), "r")) {
           $this->container->get(PaypalImportService::class)->import($handle);
+        }
+      }
+
+      $this->container->get('view')->render($response, 'paypal.html.twig');
+      return $response;
+    }
+
+    public function sogecom($request, $response, $args) {
+      $files = $request->getUploadedFiles();
+
+      $csv = $files['importSogecom'];
+      if ($csv->getError() === UPLOAD_ERR_OK) {
+        if ($handle = fopen($csv->getFilePath(), "r")) {
+          $this->container->get(SogecomImportService::class)->import($handle);
+        }
+      }
+
+      $this->container->get('view')->render($response, 'paypal.html.twig');
+      return $response;
+    }
+
+    public function sg($request, $response, $args) {
+      $files = $request->getUploadedFiles();
+
+      $csv = $files['importSG'];
+      if ($csv->getError() === UPLOAD_ERR_OK) {
+        if ($handle = fopen($csv->getFilePath(), "r")) {
+          $this->container->get(SGImportService::class)->import($handle);
         }
       }
 

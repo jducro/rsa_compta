@@ -1,0 +1,38 @@
+{% extends "layout.html.twig" %}
+
+{% block body %}
+  <form method="post" action="{{ url_for('line', {'id': line.id}) }}" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nom</label>
+      <input type="text" class="form-control" id="name" name="name" readonly disabled value="{{ line.name }}">
+    </div>
+    <div class="mb-3">
+      <label for="label" class="form-label">Libellé</label>
+      <input type="text" class="form-control" id="label" name="label" readonly disabled value="{{ line.label }}">
+    </div>
+    <div class="mb-3">
+      <label for="amount" class="form-label">Montant</label>
+      <input type="text" class="form-control" id="amount" name="amount" readonly disabled value="{{ line.amount|format_currency('EUR', locale='fr') }}">
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea rows="5" class="form-control" id="description" name="description" readonly disabled>{{ line.description }}</textarea>
+    </div>
+    <div class="mb-3">
+      <label for="breakdown" class="form-label">Ventilation</label>
+      <div class="row">
+        {% for value, name in breakdowns %}
+          <div class="col-sm-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="{{ value }}" id="breakdown_{{ value }}" {% if value in line.breakdown %}checked="checked"{% endif %} />
+              <label class="form-check-label" for="breakdown_{{ value }}">
+                {{ name}}
+              </label>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </form>
+{% endblock %}

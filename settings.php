@@ -2,8 +2,6 @@
 
 define('APP_ROOT', __DIR__);
 
-var_dump(APP_ROOT);
-
 return [
   'settings' => [
     'slim' => [

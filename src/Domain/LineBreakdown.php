@@ -19,4 +19,25 @@ final class LineBreakdown {
   public const DonationAdvance = "DonationAdvance"; // Avance don
   public const VibrationDebit = "VibrationDebit"; // Vibration Debit
   public const VibrationCredit = "VibrationCredit"; // Vibration Credit
+
+  static public function getBreakdowns() {
+    return [
+      self::PlaneRenewal => "Renouvellement",
+      self::CustomerFees => "Frais client",
+      self::RSAContribution => "Cotisation RSA",
+      self::RSANavContribution => "Cotisation RSA Nav",
+      self::FollowUpNav => "Suivi Nav",
+      self::InternalTransfer => "Virement interne",
+      self::PenRefund => "Remboursement PEN",
+      self::Meeting => "Réunion / Séminaire",
+      self::PaypalFees => "Frais Paypal",
+      self::SogecomFees => "Frais Sogecom",
+      self::Osac => "OSAC",
+      self::Other => "Autre",
+      self::Donation => "Don",
+      self::DonationAdvance => "Avance don",
+      self::VibrationDebit => "Vibration Debit",
+      self::VibrationCredit => "Vibration Credit",
+    ];
+  }
 }

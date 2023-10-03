@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManager;
 use App\Domain\Line;
 use App\Domain\LineBreakdown;
 
-final class PaypalImportService
+final class SogecomImportService
 {
   public function __construct(
     private EntityManager $em
@@ -18,19 +18,17 @@ final class PaypalImportService
   {
     $this->em->getConnection()->beginTransaction();
 
-    $fileLine = 1;
+    $firstLine = true;
 
     while (($line = fgets($handle)) !== false) {
-      if ($fileLine++ === 1) {
-        $line = str_getcsv($line, ",");
-        if (count($line) !== 41) {
-          throw new \Exception("Not a Paypal CSV file");
-        }
+      if ($firstLine) {
+        $firstLine = false;
         continue;
       }
-      $line = str_getcsv($line, ",");
-      $this->em->persist($this->createLine($line));
-      $fees = $this->createFeesLine($line);
+      $line = mb_convert_encoding($line, 'ISO-8859-1', 'UTF-8');
+      $data = str_getcsv($line, ";");
+      $this->em->persist($this->createLine($data));
+      $fees = $this->createFeesLine($data);
       if ($fees) {
         $this->em->persist($fees);
       }
@@ -43,29 +41,31 @@ final class PaypalImportService
   public function createLine(array $data): Line
   {
     $line = new Line();
-    $line->setDate(\DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[0] . ' ' . $data[1], new \DateTimeZone($data[2] ?? 'Europe/Paris')));
+    $line->setDate(\DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[0], new \DateTimeZone('Europe/Paris')));
     $line->setName($data[3]);
-    $line->setType("PAYPAL");
-    $line->setAmount($this->toFloat($data[7]));
-    $line->setLabel($data[15]);
+    $line->setType("Sogecom");
+    $line->setAmount($this->toFloat($data[1]));
     if ($line->getAmount() >= 100) {
-      // Supérieur à 100€, c'est un renouvellement d'avion
+      // Supérieur à 100€, c'est un renouvellement CDN
       $line->setBreakdown([LineBreakdown::PlaneRenewal]);
       $line->breakdownPlaneRenewal = 100;
       $line->breakdownCustomerFees = $line->getAmount() - 100;
       if ($line->breakdownCustomerFees > 0) {
         $line->addBreakdown(LineBreakdown::CustomerFees);
       }
+      $line->setLabel('Renouvellement CDN');
     } else if ($line->getAmount() > 0) {
       // Inférieur à 100€, c'est une contribution RSA
       $line->setBreakdown([LineBreakdown::RSAContribution]);
       $line->breakdownRSAContribution = $line->getAmount();
+      $line->setLabel('COTISATION RSA NAV '.$line->getDate()->format('Y'));
     } else {
       // Montant négatif, c'est un transfert vers la SG
       $line->setBreakdown([LineBreakdown::InternalTransfer]);
       $line->breakdownInternalTransfer = $line->getAmount();
+      $line->setLabel('Virement vers la SG');
     }
-    $line->setDescription($data[26]);
+    $line->setDescription($data[4]."\n".$data[5]);
     
     return $line;
   }
@@ -73,12 +73,12 @@ final class PaypalImportService
   public function createFeesLine(array $data): Line | null
   {
     $line = new Line();
-    $line->setDate(\DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[0] . ' ' . $data[1], new \DateTimeZone($data[2] ?? 'Europe/Paris')));
-    $line->setType("PAYPAL");
+    $line->setDate(\DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[0], new \DateTimeZone('Europe/Paris')));
+    $line->setType("Sogecom");
     $line->setName($data[3]);
-    $line->setAmount($this->toFloat($data[8]));
-    $line->setBreakdown([LineBreakdown::PaypalFees]);
-    $line->breakdownPaypalFees = $line->getAmount();
+    $line->setAmount($this->toFloat($data[6]) * -1);
+    $line->setBreakdown([LineBreakdown::SogecomFees]);
+    $line->breakdownSogecomFees = $line->getAmount();
     if ($line->getAmount() == 0) {
       return null;
     }
@@ -87,6 +87,6 @@ final class PaypalImportService
 
   private function toFloat(string $value): float
   {
-    return floatval(strtr($value, [',' => '.', ' ' => '', ' ' => '']));
+    return floatval(strtr(str_replace(' EUR', '', $value), [',' => '.', ' ' => '', ' ' => '']));
   }
 }
