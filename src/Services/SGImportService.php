@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Doctrine\ORM\EntityManager;
 use App\Domain\Line;
+use App\Domain\LineBreakdown;
 
 final class SGImportService
 {
@@ -39,10 +40,10 @@ final class SGImportService
     $this->em->getConnection()->commit();
   }
 
-  public function createLine(array $data, $handle, &$fileLine): Line
+  public function createLine(array $data, $handle, &$fileLine): void
   {
     $line = new Line();
-    $line->setDate(\DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[5] . "12:00:00", new \DateTimeZone('Europe/Paris')));
+    $line->setDate(\DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[5] . "01:00:00", new \DateTimeZone('Europe/Paris')));
     $line->setAmount($this->toFloat($data[2] == "" ? $data[3] : $data[2]));
     $line->setLabel($data[6]);
     
@@ -58,8 +59,56 @@ final class SGImportService
 
     $line->setDescription($description);
 
-    $this->em->persist($line);
-    
+    $line = $this->qualifyLine($line);
+
+    if ($line) {
+      $this->em->persist($line);
+    }
+  }
+
+  private function qualifyLine(Line $line): Line | null 
+  {
+    if (strpos($line->getDescription(), 'ABONNT ENCAISSEMENT INTERNET') === 0) {
+      $line->setType('VRT');
+      $line->setBreakdown([LineBreakdown::SogecomFees]);
+      $line->breakdownSogecomFees = $line->getAmount();
+      return $line;
+    }
+    if (strpos($line->getDescription(), 'COTISATION JAZZ ASSOCIATIONS') === 0) {
+      $line->setType('VRT');
+      $line->setBreakdown([LineBreakdown::InternalTransfer]);
+      $line->breakdownInternalTransfer = $line->getAmount();
+      return $line;
+    }
+    // Frais déjà comptabilisés dans l'import Sogecom
+    if (strpos($line->getDescription(), 'REMISE CB') === 0) {
+      if ($line->getLabel() === 'FACTURES CARTES REMISES' || $line->getLabel() === 'COMMISSIONS ET FRAIS DIVERS') {
+        return null;
+      }
+    }
+    if ($line->getLabel() === 'AUTRES VIREMENTS RECUS' || strpos($line->getDescription(), 'VIR INST RE') === 0) {
+      $line->setType('VRT');
+    }
+    if (strpos($line->getDescription(), 'DE: PayPal Europe S.a.r.l. et Cie S.C.A') !== false) {
+      $line->setBreakdown([LineBreakdown::InternalTransfer]);
+      $line->breakdownInternalTransfer = $line->getAmount();
+      return $line;
+    }
+    if ($line->getLabel() === 'AUTRES VIREMENTS EMIS') {
+      $line->setType('VRT');
+      if (strpos($line->getDescription(), 'RBT FRAIS PEN') !== false && $line->getAmount() < 0) {
+        $line->setBreakdown([LineBreakdown::PenRefund]);
+        $line->breakdownPenRefund = $line->getAmount();
+        $line->setName('PEN');
+        return $line;
+      }
+      if (strpos($line->getDescription(), 'OSAC  DFFAI') !== false && $line->getAmount() < 0) {
+        $line->setBreakdown([LineBreakdown::Osac]);
+        $line->breakdownOsac = $line->getAmount();
+        $line->setName('OSAC');
+        return $line;
+      }
+    }
     return $line;
   }
 

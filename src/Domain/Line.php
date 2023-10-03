@@ -176,6 +176,10 @@ final class Line implements \JsonSerializable
     $this->description = $description;
   }
 
+  public function __set($name, $value) { 
+    $this->$name = $value; 
+  }
+
   #[\ReturnTypeWillChange]
   public function jsonSerialize(): array
   {

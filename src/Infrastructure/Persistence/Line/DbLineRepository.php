@@ -44,4 +44,10 @@ class DbLineRepository implements LineRepository
   {
     return $this->entityManager->getRepository(Line::class)->find($id);
   }
+
+  public function save(Line $line): void
+  {
+    $this->entityManager->persist($line);
+    $this->entityManager->flush();
+  }
 }

@@ -4,7 +4,7 @@
   <form method="post" className="line-form" action="{{ url_for('line', {'id': line.id}) }}">
     <div class="mb-3">
       <label for="name" class="form-label">Banque</label>
-      <select class="form-select" aria-label="Default select example">
+      <select class="form-select" name="type">
         <option {% if not line.type %}selected{% endif %}>- Choisir -</option>
         <option value="PAYPAL" {% if line.type == 'PAYPAL' %}selected{% endif %}>PAYPAL</option>
         <option value="Sogecom" {% if line.type == 'Sogecom' %}selected{% endif %}>Sogecom</option>
@@ -34,7 +34,7 @@
         {% for value, name in breakdowns %}
           <div class="col-sm-3">
             <div class="form-check">
-              <input class="form-check-input breakdown_toggle" type="checkbox" value="{{ value }}" id="breakdown_{{ value }}" {% if value in line.breakdown %}checked="checked"{% endif %} />
+              <input class="form-check-input breakdown_toggle" type="checkbox" value="{{ value }}" name="breakdown[{{ value }}]" id="breakdown_{{ value }}" {% if value in line.breakdown %}checked="checked"{% endif %} />
               <label class="form-check-label" for="breakdown_{{ value }}">
                 {{ name}}
               </label>
@@ -48,7 +48,7 @@
         {% for value, name in breakdowns %}
           <div class="col-sm-3 breakdown-input-{{value}}" {% if value not in line.breakdown %}style="display: none"{% endif %}>
             <label for="breakdown{{ value }}" class="form-label">{{ name }}</label>
-            <input type="text" class="form-control breakdown-input" id="label" name="label" value="{{ attribute(line, "breakdown" ~ value)| default(0) | format_currency('EUR', locale='fr') }}">
+            <input type="text" class="form-control breakdown-input" id="breakdown{{ value }}" name="breakdown{{ value }}" value="{{ attribute(line, "breakdown" ~ value)| default(0) | format_currency('EUR', locale='fr') }}">
             {% if value == 'PlaneRenewal' %}
               <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(100)">100</button>
               <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(200)">200</button>
