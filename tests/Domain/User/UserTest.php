@@ -12,11 +12,8 @@ class UserTest extends TestCase
     public function userProvider(): array
     {
         return [
-            [1, 'bill.gates', 'Bill', 'Gates'],
-            [2, 'steve.jobs', 'Steve', 'Jobs'],
-            [3, 'mark.zuckerberg', 'Mark', 'Zuckerberg'],
-            [4, 'evan.spiegel', 'Evan', 'Spiegel'],
-            [5, 'jack.dorsey', 'Jack', 'Dorsey'],
+            [1, 'pierre', 'Pierre', 'Burkmann'],
+            [2, 'julien', 'Julien', 'Ducro'],
         ];
     }
 

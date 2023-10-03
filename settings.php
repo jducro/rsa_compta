@@ -1,6 +1,8 @@
 <?php
 
-define('APP_ROOT', __DIR__);
+if (!defined('APP_ROOT')) {
+  define('APP_ROOT', __DIR__);
+}
 
 return [
   'settings' => [

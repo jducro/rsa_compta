@@ -7,7 +7,9 @@ use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Monolog\Logger;
 
-define('APP_ROOT', dirname(__DIR__));
+if (!defined('APP_ROOT')) {
+    define('APP_ROOT', dirname(__DIR__));
+}
 
 return function (ContainerBuilder $containerBuilder) {
 
