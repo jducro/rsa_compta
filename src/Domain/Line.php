@@ -38,52 +38,49 @@ final class Line implements \JsonSerializable
   private ?string $description;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownPlaneRenewal;
+  public ?float $breakdownPlaneRenewal;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownCustomerFees;
+  public ?float $breakdownCustomerFees;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownRSAContribution;
+  public ?float $breakdownRSAContribution;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownRSANavContribution;
+  public ?float $breakdownRSANavContribution;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownFollowUpNav;
+  public ?float $breakdownFollowUpNav;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownInternalTransfer;
+  public ?float $breakdownInternalTransfer;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownPenRefund;
+  public ?float $breakdownPenRefund;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownMeeting;
+  public ?float $breakdownMeeting;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownPaypalFees;
+  public ?float $breakdownPaypalFees;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownSogecomFees;
+  public ?float $breakdownSogecomFees;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownOsac;
+  public ?float $breakdownOsac;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownOther;
+  public ?float $breakdownOther;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownDonation;
+  public ?float $breakdownDonation;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownDonationAdvance;
+  public ?float $breakdownVibrationDebit;
 
   #[Column(type: 'float', nullable: true)]
-  public float $breakdownVibrationDebit;
-
-  #[Column(type: 'float', nullable: true)]
-  public float $breakdownVibrationCredit;
+  public ?float $breakdownVibrationCredit;
 
   public function __construct() {
     $this->breakdown = [];
@@ -94,7 +91,7 @@ final class Line implements \JsonSerializable
     return $this->id;
   }
 
-  public function getType(): string
+  public function getType(): string | null
   {
     return $this->type;
   }
@@ -124,7 +121,7 @@ final class Line implements \JsonSerializable
     $this->name = $name;
   }
 
-  public function getLabel(): string
+  public function getLabel(): string | null
   {
     return $this->label;
   }
@@ -143,6 +140,16 @@ final class Line implements \JsonSerializable
   {
     $this->amount = $amount;
   }
+
+  public function getDebit(): float | null
+  {
+    return $this->amount < 0 ? $this->amount : null;
+  }
+
+  public function getCredit(): float | null
+  {
+    return $this->amount > 0 ? $this->amount : null;
+  }
   
   public function getBreakdown(): array
   {
@@ -159,7 +166,7 @@ final class Line implements \JsonSerializable
     $this->breakdown[] = $breakdown;
   }
 
-  public function getDescription(): string
+  public function getDescription(): string | null
   {
     return $this->description;
   }

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Infrastructure\Persistence\Line\DbLineRepository;
+use App\Services\ExcelExportService;
 use App\Services\PaypalImportService;
 use App\Services\SGImportService;
 use App\Services\SogecomImportService;
@@ -17,5 +19,8 @@ return function (Container $container) {
   });
   $container->set(SGImportService::class, static function (Container $c) {
     return new SGImportService($c->get(EntityManager::class));
+  });
+  $container->set(ExcelExportService::class, static function (Container $c) {
+    return new ExcelExportService($c->get(DbLineRepository::class));
   });
 };

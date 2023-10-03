@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\Book\ExcelAction;
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\ViewUserAction;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -26,6 +27,7 @@ return function (App $app) {
         $group->get('', ListTableAction::class)->setName('book');
         $group->get('/lignes', ListLinesAction::class)->setName('lines');
         $group->any('/lignes/{id}', ListLineEditAction::class)->setName('line');
+        $group->get('/excel', ExcelAction::class)->setName('excel');
     });
     $app->group('/imports', function (Group $group) {
         $group->get('', ImportController::class . ':home')->setName('imports');

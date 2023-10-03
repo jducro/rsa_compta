@@ -3,8 +3,6 @@
 namespace App\Application\Actions\Book;
 
 use App\Application\Actions\Action;
-use App\Domain\Line;
-use App\Domain\LineBreakdown;
 use App\Infrastructure\Persistence\Line\DbLineRepository;
 use Psr\Log\LoggerInterface;
 

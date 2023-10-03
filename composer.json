@@ -27,6 +27,7 @@
         "doctrine/orm": "^2.16",
         "monolog/monolog": "^2.8",
         "php-di/php-di": "^6.4",
+        "phpoffice/phpspreadsheet": "^1.29",
         "slim/psr7": "^1.6",
         "slim/slim": "^4.10",
         "slim/twig-view": "^3.3",

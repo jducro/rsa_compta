@@ -15,8 +15,7 @@ final class LineBreakdown {
   public const SogecomFees = "SogecomFees"; // Frais Sogecom
   public const Osac = "Osac"; // OSAC
   public const Other = "Other"; // Autre
-  public const Donation = "Donation"; // Don
-  public const DonationAdvance = "DonationAdvance"; // Avance don
+  public const Donation = "Donation"; // Don Avance
   public const VibrationDebit = "VibrationDebit"; // Vibration Debit
   public const VibrationCredit = "VibrationCredit"; // Vibration Credit
 
@@ -35,7 +34,6 @@ final class LineBreakdown {
       self::Osac => "OSAC",
       self::Other => "Autre",
       self::Donation => "Don",
-      self::DonationAdvance => "Avance don",
       self::VibrationDebit => "Vibration Debit",
       self::VibrationCredit => "Vibration Credit",
     ];
