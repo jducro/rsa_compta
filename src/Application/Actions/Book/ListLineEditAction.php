@@ -27,9 +27,7 @@ class ListLineEditAction extends Action
             $routeParser = RouteContext::fromRequest($this->request)->getRouteParser();
             $url = $routeParser->urlFor('book');
 
-            return $this->response
-              ->withHeader('Location', $url)
-              ->withStatus(302);
+            return $this->redirect($url);
         }
         if ($this->request->getParsedBody()) {
             $line->setType($this->request->getParsedBody()['type']);
@@ -44,9 +42,7 @@ class ListLineEditAction extends Action
             $routeParser = RouteContext::fromRequest($this->request)->getRouteParser();
             $url = $routeParser->urlFor('book');
 
-            return $this->response
-              ->withHeader('Location', $url)
-              ->withStatus(302);
+            return $this->redirect($url);
         }
         $this->container->get('view')->render($this->response, 'edit_line.html.twig', [
           'line' => $line,

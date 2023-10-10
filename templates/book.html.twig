@@ -27,6 +27,9 @@
       </tr>
     </tfoot>
   </table>
+  <div>
+    <a href="{{ url_for('excel') }}" class="btn btn-secondary"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
+  </div>
 
   <script type="text/javascript">
     function moneyFormat(data) {
@@ -45,13 +48,17 @@
       order: [[2, 'asc']],
       pageLength: 20,
       columns: [
-        {data: 'id', render: function(data, type, row) {
-          let url = '{{ url_for('line', {'id': 0}) }}';
-          url = url.replace('0', data);
-          return '<a href="'+url+'">Editer</a>';
-        }},
+        {
+          data: 'id',
+          render: function(data, type, row) {
+            let url = '{{ url_for('line', {'id': 0}) }}';
+            url = url.replace('0', data);
+            return '<a href="'+url+'"><i class="bi bi-pencil-square"></i> Editer</a>';
+          },
+          sortable: false,
+        },
         {data: 'type'},
-        {data: 'date', 
+        {data: 'date',
           render: function(data, type, row) {
             const date = new Date(data.date);
             return dateFns.format(date, 'DD/MM/YYYY');
@@ -60,7 +67,7 @@
         {data: 'name'},
         {data: 'label'},
         {
-          data: 'debit', 
+          data: 'debit',
           className: 'dt-right font-weight-bold',
           render : function (data) {
             return '<strong>'+moneyFormat(data)+'</strong>';

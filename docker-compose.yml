@@ -6,13 +6,18 @@ volumes:
 
 services:
     slim:
-        image: php:7-alpine
+        container_name: php
+        build:
+            context: ./instances/php
+            dockerfile: Dockerfile
         working_dir: /var/www
-        command: php -S 0.0.0.0:8080 -t public
+        command: php -S 0.0.0.0:8090 -t public
         environment:
             docker: "true"
         ports:
-            - "8080:8080"
+            - "8090:8090"
+        expose:
+            - "8090"
         volumes:
             - .:/var/www
             - logs:/var/www/logs

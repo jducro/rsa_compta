@@ -89,4 +89,11 @@ abstract class Action
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus($payload->getStatusCode());
     }
+
+    protected function redirect(string $url): Response
+    {
+        return $this->response
+            ->withHeader('Location', $url)
+            ->withStatus(302);
+    }
 }

@@ -15,9 +15,7 @@ class ImportController
 
     public function home($request, $response, $args)
     {
-        $this->container->get('view')->render($response, 'imports.html.twig', [
-          'name' => 'John Doe'
-        ]);
+        $this->container->get('view')->render($response, 'imports.html.twig');
         return $response;
     }
 
@@ -26,13 +24,18 @@ class ImportController
         $files = $request->getUploadedFiles();
 
         $csv = $files['importPaypal'];
-        if ($csv->getError() === UPLOAD_ERR_OK) {
+        $error = $this->getUploadError($csv);
+        if ($csv->getError() === '') {
             if ($handle = fopen($csv->getFilePath(), "r")) {
-                $this->container->get(PaypalImportService::class)->import($handle);
+                /** @var PaypalImportService $paypalImportService */
+                $paypalImportService = $this->container->get(PaypalImportService::class);
+                $paypalImportService->import($handle);
             }
         }
 
-        $this->container->get('view')->render($response, 'paypal.html.twig');
+        $this->container->get('view')->render($response, 'imports.html.twig', [
+          'error' => $error,
+        ]);
         return $response;
     }
 
@@ -41,13 +44,18 @@ class ImportController
         $files = $request->getUploadedFiles();
 
         $csv = $files['importSogecom'];
-        if ($csv->getError() === UPLOAD_ERR_OK) {
+        $error = $this->getUploadError($csv);
+        if ($csv->getError() === '') {
             if ($handle = fopen($csv->getFilePath(), "r")) {
-                $this->container->get(SogecomImportService::class)->import($handle);
+                /** @var SogecomImportService $sogecomImportService */
+                $sogecomImportService = $this->container->get(SogecomImportService::class);
+                $sogecomImportService->import($handle);
             }
         }
 
-        $this->container->get('view')->render($response, 'paypal.html.twig');
+        $this->container->get('view')->render($response, 'imports.html.twig', [
+            'error' => $error,
+        ]);
         return $response;
     }
 
@@ -56,13 +64,32 @@ class ImportController
         $files = $request->getUploadedFiles();
 
         $csv = $files['importSG'];
-        if ($csv->getError() === UPLOAD_ERR_OK) {
+        $error = $this->getUploadError($csv);
+        if ($csv->getError() === '') {
             if ($handle = fopen($csv->getFilePath(), "r")) {
-                $this->container->get(SGImportService::class)->import($handle);
+                /** @var SGImportService $sgImportService */
+                $sgImportService = $this->container->get(SGImportService::class);
+                $sgImportService->import($handle);
             }
         }
 
-        $this->container->get('view')->render($response, 'paypal.html.twig');
+        $this->container->get('view')->render($response, 'imports.html.twig', [
+            'error' => $error,
+        ]);
         return $response;
+    }
+
+    protected function getUploadError($csv): string
+    {
+        return match ($csv->getError()) {
+            UPLOAD_ERR_NO_FILE => 'Aucun fichier n\'a été envoyé',
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Le fichier envoyé dépasse la taille maximale autorisée',
+            UPLOAD_ERR_PARTIAL => 'Le fichier n\'a été que partiellement envoyé',
+            UPLOAD_ERR_NO_TMP_DIR => 'Erreur système : aucun répertoire temporaire',
+            UPLOAD_ERR_CANT_WRITE => 'Erreur système : impossible d\'écrire sur le disque',
+            UPLOAD_ERR_EXTENSION => 'Erreur système : une extension PHP a arrêté l\'envoi de fichier',
+            UPLOAD_ERR_OK => '',
+            default => 'Erreur lors de l\'import du fichier',
+        };
     }
 }

@@ -22,8 +22,6 @@ class ExcelAction extends Action
     protected function action(): Response
     {
         $this->container->get(ExcelExportService::class)->export();
-        return $this->response
-              ->withHeader('Location', '/export.xlsx')
-              ->withStatus(302);
+        return $this->redirect('/export.xlsx');
     }
 }
