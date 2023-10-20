@@ -44,6 +44,10 @@ final class SGImportService
         $line = new Line();
         $timezone = new \DateTimeZone('Europe/Paris');
         $date = \DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[5] . "01:00:00", $timezone);
+        if (!$date) {
+            $fileLine = fgets($handle);
+            return;
+        }
         $line->setDate($date);
         $line->setAmount($this->toFloat($data[2] == "" ? $data[3] : $data[2]));
         $line->setLabel($data[6]);
@@ -100,7 +104,7 @@ final class SGImportService
         }
         if ($line->getLabel() === 'AUTRES VIREMENTS EMIS') {
             $line->setType('VRT');
-            if (strpos($line->getDescription(), 'RBT FRAIS PEN') !== false && $line->getAmount() < 0) {
+            if ((strpos($line->getDescription(), 'RBTS FRAIS PEN') !== false || strpos($line->getDescription(), 'RBT FRAIS PEN') !== false) && $line->getAmount() < 0) {
                 $line->setBreakdown([LineBreakdown::PEN_REFUND]);
                 $line->breakdownPenRefund = $line->getAmount();
                 $line->setName('PEN');

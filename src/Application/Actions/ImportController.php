@@ -25,7 +25,7 @@ class ImportController
 
         $csv = $files['importPaypal'];
         $error = $this->getUploadError($csv);
-        if ($csv->getError() === '') {
+        if ($error === '') {
             if ($handle = fopen($csv->getFilePath(), "r")) {
                 /** @var PaypalImportService $paypalImportService */
                 $paypalImportService = $this->container->get(PaypalImportService::class);
@@ -45,7 +45,7 @@ class ImportController
 
         $csv = $files['importSogecom'];
         $error = $this->getUploadError($csv);
-        if ($csv->getError() === '') {
+        if ($error === '') {
             if ($handle = fopen($csv->getFilePath(), "r")) {
                 /** @var SogecomImportService $sogecomImportService */
                 $sogecomImportService = $this->container->get(SogecomImportService::class);
@@ -65,7 +65,7 @@ class ImportController
 
         $csv = $files['importSG'];
         $error = $this->getUploadError($csv);
-        if ($csv->getError() === '') {
+        if ($error === '') {
             if ($handle = fopen($csv->getFilePath(), "r")) {
                 /** @var SGImportService $sgImportService */
                 $sgImportService = $this->container->get(SGImportService::class);
