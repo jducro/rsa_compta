@@ -32,7 +32,7 @@
         "slim/slim": "^4.10",
         "slim/twig-view": "^3.3",
         "symfony/cache": "^6.3",
-        "twig/intl-extra": "^3.7",
+        "twig/intl-extra": "^3.8",
         "uma/dic": "^2.0"
     },
     "require-dev": {
