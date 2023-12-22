@@ -1,5 +1,7 @@
 {% extends "layout.html.twig" %}
 
+{% block container %}<div class="container-fluid">{% endblock %}
+
 {% block body %}
   <table id="book" class="table table-striped" style="width:100%">
     <thead>
@@ -12,6 +14,20 @@
         <th>Débit</th>
         <th>Crédit</th>
         <th>Ventilation</th>
+        <th>Renouv.</th>
+        <th>F. Client</th>
+        <th>Cot. RSANav</th>
+        <th>Cot. RSA</th>
+        <th>Suivi Nav</th>
+        <th>Rbt PEN</th>
+        <th title="Reunion / Seminaire PEN">Reu/Sem Pen</th>
+        <th>Frais Paypal</th>
+        <th>Frais Sogecom</th>
+        <th>OSAC</th>
+        <th>Autres Charges</th>
+        <th>Dons</th>
+        <th>Vib Deb.</th>
+        <th>Vib Cred.</th>
       </tr>
     </thead>
     <tfoot>
@@ -24,6 +40,20 @@
         <th>Débit</th>
         <th>Crédit</th>
         <th>Ventilation</th>
+        <th>Renouv.</th>
+        <th>F. Client</th>
+        <th>Cot. RSANav</th>
+        <th>Cot. RSA</th>
+        <th>Suivi Nav</th>
+        <th>Rbt PEN</th>
+        <th title="Reunion / Seminaire PEN">Reu/Sem Pen</th>
+        <th>Frais Paypal</th>
+        <th>Frais Sogecom</th>
+        <th>OSAC</th>
+        <th>Autres Charges</th>
+        <th>Dons</th>
+        <th>Vib Deb.</th>
+        <th>Vib Cred.</th>
       </tr>
     </tfoot>
   </table>
@@ -39,7 +69,10 @@
       return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(data);
     }
     new DataTable('#book', {
-      ajax: '{{ url_for('lines')}}',
+      ajax: {
+        url: '{{ url_for('lines', {filter: filter})}}',
+        type: "POST",
+      },
       processing: true,
       serverSide: true,
       language: {
@@ -47,13 +80,17 @@
       },
       order: [[2, 'asc']],
       pageLength: 20,
+      lengthMenu: [
+        [10, 20, 50, -1],
+        [10, 20, 50, 'Toutes']
+      ],
       columns: [
         {
           data: 'id',
           render: function(data, type, row) {
             let url = '{{ url_for('line', {'id': 0}) }}';
             url = url.replace('0', data);
-            return '<a href="'+url+'"><i class="bi bi-pencil-square"></i> Editer</a>';
+            return '<a href="'+url+'" style="white-space: nowrap;"><i class="bi bi-pencil-square"></i> Editer</a>';
           },
           sortable: false,
         },
@@ -85,7 +122,91 @@
           render: function (data) {
             return data.length > 0 ? '<span style="color: green;">&check;</span>' : '<span style="color: red;">&cross;</span>';
           }
-        }
+        },
+        {
+          data: 'breakdownPlaneRenewal',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownCustomerFees',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownRSANavContribution',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownRSAContribution',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownFollowUpNav',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownPenRefund',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownPenMeeting',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownPaypalFees',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownSogecomFees',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownOsac',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownOtherFees',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownDonation',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownVibrationDebit',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
+        {
+          data: 'breakdownVibrationCredit',
+          render : function (data) {
+            return moneyFormat(data);
+          }
+        },
       ]
   });
   </script>

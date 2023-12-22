@@ -27,4 +27,11 @@
       <button type="submit" class="btn btn-primary">Envoyer</button>
     </div>
   </form>
+  <form method="post" action="{{ url_for('checkDelivery')}}" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="importCheckDelivery" class="form-label">Import Remises de chèques</label>
+      <input type="file" class="form-control" id="importCheckDelivery" name="importCheckDelivery">
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+    </div>
+  </form>
 {% endblock %}

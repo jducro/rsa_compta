@@ -6,8 +6,8 @@ final class LineBreakdown
 {
     public const PLANE_RENEWAL = "PlaneRenewal"; // Renouvellement
     public const CUSTOMER_FEES = "CustomerFees"; // Frais client
-    public const RSA_CONTRIBUTION = "RSAContribution"; // Cotisation RSA
     public const RSA_NAV_CONTRIBUTION = "RSANavContribution"; // Cotisation RSA Nav
+    public const RSA_CONTRIBUTION = "RSAContribution"; // Cotisation RSA
     public const FOLLOW_UP_NAV = "FollowUpNav"; // Suivi Nav
     public const INTERNAL_TRANSFER = "InternalTransfer"; // Virement interne
     public const PEN_REFUND = "PenRefund"; // Remboursement PEN
@@ -25,8 +25,8 @@ final class LineBreakdown
         return [
           self::PLANE_RENEWAL => "Renouvellement",
           self::CUSTOMER_FEES => "Frais client",
-          self::RSA_CONTRIBUTION => "Cotisation RSA",
           self::RSA_NAV_CONTRIBUTION => "Cotisation RSA Nav",
+          self::RSA_CONTRIBUTION => "Cotisation RSA",
           self::FOLLOW_UP_NAV => "Suivi Nav",
           self::INTERNAL_TRANSFER => "Virement interne",
           self::PEN_REFUND => "Remboursement PEN",

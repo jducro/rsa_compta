@@ -14,6 +14,7 @@ use App\Application\Actions\ImportController;
 use App\Application\Actions\Book\ListLineEditAction;
 use App\Application\Actions\Book\ListLinesAction;
 use App\Application\Actions\Book\ListTableAction;
+use App\Application\Actions\Book\ListBreakdownAction;
 
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -25,15 +26,17 @@ return function (App $app) {
 
     $app->group('/livre', function (Group $group) {
         $group->get('', ListTableAction::class)->setName('book');
-        $group->get('/lignes', ListLinesAction::class)->setName('lines');
+        $group->post('/lignes', ListLinesAction::class)->setName('lines');
         $group->any('/lignes/{id}', ListLineEditAction::class)->setName('line');
         $group->get('/excel', ExcelAction::class)->setName('excel');
+        $group->get('/a_ventiler', ListBreakdownAction::class)->setName('toBreakdown');
     });
     $app->group('/imports', function (Group $group) {
         $group->get('', ImportController::class . ':home')->setName('imports');
         $group->post('/paypal', ImportController::class . ':paypal')->setName('paypal');
         $group->post('/sg', ImportController::class . ':sg')->setName('sg');
         $group->post('/sogecom', ImportController::class . ':sogecom')->setName('sogecom');
+        $group->post('/remises', ImportController::class . ':checkDelivery')->setName('checkDelivery');
     });
 
     $app->group('/users', function (Group $group) {

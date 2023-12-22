@@ -3,6 +3,10 @@
 {% block body %}
   <form method="post" className="line-form" action="{{ url_for('line', {'id': line.id}) }}">
     <div class="mb-3">
+      <label for="date" class="form-label">Date</label>
+      <div class="form-control">{{ line.date|date('Y-m-d') }}</div>
+    </div>
+    <div class="mb-3">
       <label for="name" class="form-label">Banque</label>
       <select class="form-select" name="type">
         <option {% if not line.type %}selected{% endif %}>- Choisir -</option>
@@ -28,38 +32,56 @@
       <label for="description" class="form-label">Description</label>
       <textarea rows="5" class="form-control" id="description" name="description">{{ line.description }}</textarea>
     </div>
-    <div class="mb-3">
-      <label for="breakdown" class="form-label">Ventilation</label>
-      <div class="row">
-        {% for value, name in breakdowns %}
-          <div class="col-sm-3">
-            <div class="form-check">
-              <input class="form-check-input breakdown_toggle" type="checkbox" value="{{ value }}" name="breakdown[{{ value }}]" id="breakdown_{{ value }}" {% if value in line.breakdown %}checked="checked"{% endif %} />
-              <label class="form-check-label" for="breakdown_{{ value }}">
-                {{ name}}
-              </label>
+    {% if line.label == 'REMISES DE CHEQUES' %}
+      <div class="mb-3">
+        <label for="description" class="form-label">Remises</label>
+        <select class="form-control" size="5" name="check_delivery">
+          {% for delivery in check_deliveries %}
+            <option
+              value="{{ delivery.id }}"
+              data-amount="{{ delivery.amount }}"
+              data-count="{{ delivery.lines|length }}"
+            >
+              {{ delivery.amount }} € / {{ delivery.date|date('Y-m-d') }} / {{ delivery.lines|length }} chèques
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Pointer</button>
+    {% else %}
+      <div class="mb-3">
+        <label for="breakdown" class="form-label">Ventilation</label>
+        <div class="row">
+          {% for value, name in breakdowns %}
+            <div class="col-sm-3">
+              <div class="form-check">
+                <input class="form-check-input breakdown_toggle" type="checkbox" value="{{ value }}" name="breakdown[{{ value }}]" id="breakdown_{{ value }}" {% if value in line.breakdown %}checked="checked"{% endif %} />
+                <label class="form-check-label" for="breakdown_{{ value }}">
+                  {{ name }}
+                </label>
+              </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
       </div>
-    </div>
-    <div class="mb-3">
-      <div class="row">
-        {% for value, name in breakdowns %}
-          <div class="col-sm-3 breakdown-input-{{value}}" {% if value not in line.breakdown %}style="display: none"{% endif %}>
-            <label for="breakdown{{ value }}" class="form-label">{{ name }}</label>
-            <input type="text" class="form-control breakdown-input" id="breakdown{{ value }}" name="breakdown{{ value }}" value="{{ attribute(line, "breakdown" ~ value)| default(0) | format_currency('EUR', locale='fr') }}">
-            {% if value == 'PlaneRenewal' %}
-              <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(100)">100</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(200)">200</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(300)">300</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(400)">400</button>
-            {% endif %}
-          </div>
-        {% endfor %}
+      <div class="mb-3">
+        <div class="row">
+          {% for value, name in breakdowns %}
+            <div class="col-sm-3 breakdown-input-{{value}}" {% if value not in line.breakdown %}style="display: none"{% endif %}>
+              <label for="breakdown{{ value }}" class="form-label">{{ name }}</label>
+              <input type="text" class="form-control breakdown-input" id="breakdown{{ value }}" name="breakdown{{ value }}" value="{{ attribute(line, "breakdown" ~ value)| default(0) | format_currency('EUR', locale='fr') }}">
+              {% if value == 'PlaneRenewal' %}
+                <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(100)">100</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(200)">200</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(300)">300</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onClick="setRenewal(400)">400</button>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
       </div>
-    </div>
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
+      <button type="submit" class="btn btn-primary">Enregistrer</button>
+    {% endif %}
 
   </form>
   <script type="text/javascript">
@@ -83,7 +105,7 @@
         if ($(this).is(':checked')) {
           $('.breakdown-input-' + value).show();
           if (getTotal() === 0) {
-            $('.breakdown-input-' + value + ' input').val('{{ line.amount|format_currency('EUR', locale='fr') }}');  
+            $('.breakdown-input-' + value + ' input').val('{{ line.amount|format_currency('EUR', locale='fr') }}');
           }
         } else {
           $('.breakdown-input-' + value).hide();
@@ -102,14 +124,36 @@
         return total;
       }
       function validateForm() {
-        
-        if (total != {{ line.amount }}) {
-          alert('La somme des ventilations doit être égale au montant de la ligne');
-          $('button[type="submit"]').prop('disabled', true);
-          return false;
+        const checkDelivery = $('select[name="check_delivery"]');
+        console.log(checkDelivery.length);
+        if (checkDelivery.length > 0) {
+          console.log(checkDelivery.val());
+          if (checkDelivery.val() === null) {
+            alert('Veuillez choisir une remise');
+            // $('button[type="submit"]').prop('disabled', true);
+            return false;
+          }
+          const option = checkDelivery.find(':selected');
+          if ({{ line.amount }} != option.data('amount')) {
+            if (!confirm('Le montant de la ligne ne correspond pas à la somme des chèques')) {
+              return false;
+            }
+          }
+          if ({{ check_count }} != option.data('count')) {
+            if (!confirm('Le nombre de chèques ne correspond pas à la somme des chèques')) {
+              return false;
+            }
+          }
+          return true;
+        } else {
+          if (getTotal() != {{ line.amount }}) {
+            alert('La somme des ventilations doit être égale au montant de la ligne');
+            // $('button[type="submit"]').prop('disabled', true);
+            return false;
+          }
         }
-        $('button[type="submit"]').prop('disabled', false);
-        return true;
+        // $('button[type="submit"]').prop('disabled', false);
+        return false;
       }
       $('.breakdown-input').change(function() {
         validateForm();

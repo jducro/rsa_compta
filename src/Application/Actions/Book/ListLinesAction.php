@@ -20,7 +20,7 @@ class ListLinesAction extends Action
 
     protected function action(): Response
     {
-        $params = $this->request->getQueryParams();
+        $params = $this->request->getParsedBody();
 
         $qb = $this->getQueryBuilder();
         if (isset($params['search']['value']) && !empty($params['search']['value'])) {
@@ -55,10 +55,10 @@ class ListLinesAction extends Action
 
     protected function getQueryBuilder(): QueryBuilder
     {
-        $breakdowns = [LineBreakdown::PAYPAL_FEES, LineBreakdown::SOGECOM_FEES, LineBreakdown::INTERNAL_TRANSFER];
+        $ignoredBreakdowns = [LineBreakdown::PAYPAL_FEES, LineBreakdown::SOGECOM_FEES, LineBreakdown::INTERNAL_TRANSFER];
         $qb = $this->lineRepository->getQueryBuilder();
         $qb->where('l.breakdown IS NULL OR l.breakdown NOT IN (:breakdown)');
-        $qb->setParameter('breakdown', $breakdowns);
+        $qb->setParameter('breakdown', $ignoredBreakdowns);
         return $qb;
     }
 }

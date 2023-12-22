@@ -73,9 +73,9 @@ final class ExcelExportService
         $this->activeWorksheet
             ->setCellValue('H' . $this->currentLine, self::formatCurrency($line->breakdownCustomerFees));
         $this->activeWorksheet
-            ->setCellValue('I' . $this->currentLine, self::formatCurrency($line->breakdownRSAContribution));
+            ->setCellValue('I' . $this->currentLine, self::formatCurrency($line->breakdownRSANavContribution));
         $this->activeWorksheet
-            ->setCellValue('J' . $this->currentLine, self::formatCurrency($line->breakdownRSANavContribution));
+            ->setCellValue('J' . $this->currentLine, self::formatCurrency($line->breakdownRSAContribution));
         $this->activeWorksheet
             ->setCellValue('K' . $this->currentLine, self::formatCurrency($line->breakdownFollowUpNav));
         $this->activeWorksheet

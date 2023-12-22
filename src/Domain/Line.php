@@ -186,15 +186,20 @@ final class Line implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-          'id' => $this->id,
-          'type' => $this->type,
-          'date' => $this->date,
-          'name' => $this->name,
-          'label' => $this->label,
-          'debit' => $this->amount < 0 ? $this->amount : null,
-          'credit' => $this->amount > 0 ? $this->amount : null,
-          'breakdown' => $this->breakdown,
-          'description' => $this->description,
+            'id' => $this->id,
+            'type' => $this->type,
+            'date' => $this->date,
+            'name' => $this->name,
+            'label' => $this->label,
+            'debit' => $this->amount < 0 ? $this->amount : null,
+            'credit' => $this->amount > 0 ? $this->amount : null,
+            'breakdown' => $this->breakdown,
+            'breakdownPlaneRenewal' => $this->breakdownPlaneRenewal,
+            'breakdownCustomerFees' => $this->breakdownCustomerFees,
+            'breakdownRSANavContribution' => $this->breakdownRSANavContribution,
+            'breakdownRSAContribution' => $this->breakdownRSAContribution,
+            'breakdownFollowUpNav' => $this->breakdownFollowUpNav,
+            'description' => $this->description,
         ];
     }
 }

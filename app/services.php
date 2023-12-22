@@ -7,6 +7,7 @@ use App\Services\ExcelExportService;
 use App\Services\PaypalImportService;
 use App\Services\SGImportService;
 use App\Services\SogecomImportService;
+use App\Services\CheckDeliveryImportService;
 use DI\Container;
 use Doctrine\ORM\EntityManager;
 
@@ -22,5 +23,8 @@ return function (Container $container) {
   });
   $container->set(ExcelExportService::class, static function (Container $c) {
     return new ExcelExportService($c->get(DbLineRepository::class));
+  });
+  $container->set(CheckDeliveryImportService::class, static function (Container $c) {
+    return new CheckDeliveryImportService($c->get(EntityManager::class));
   });
 };

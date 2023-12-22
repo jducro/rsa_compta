@@ -5,6 +5,8 @@ namespace App\Application\Actions;
 use App\Services\PaypalImportService;
 use App\Services\SGImportService;
 use App\Services\SogecomImportService;
+use App\Services\CheckDeliveryImportService;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Psr\Container\ContainerInterface;
 
 class ImportController
@@ -76,6 +78,32 @@ class ImportController
         $this->container->get('view')->render($response, 'imports.html.twig', [
             'error' => $error,
         ]);
+        return $response;
+    }
+
+    public function checkDelivery($request, $response, $args)
+    {
+        $files = $request->getUploadedFiles();
+
+        $inputFileType = 'Xlsx';
+
+        $file = $files['importCheckDelivery'];
+        $error = $this->getUploadError($file);
+        if ($error !== '') {
+            $this->container->get('view')->render($response, 'imports.html.twig', [
+                'error' => $error,
+            ]);
+            return $response;
+        }
+
+        $reader = IOFactory::createReader($inputFileType);
+        $reader->setReadDataOnly(true);
+        $checkDeliveryImportService = $this->container->get(CheckDeliveryImportService::class);
+        $spreadsheet = $reader->load($file->getFilePath());
+        $checkDeliveryImportService->import($spreadsheet);
+
+
+        $this->container->get('view')->render($response, 'imports.html.twig');
         return $response;
     }
 
