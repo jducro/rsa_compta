@@ -84,11 +84,16 @@ class ListLineEditAction extends Action
             );
             $line->setAmount($checkDeliveryLine->getAmount());
             if (strpos($checkDeliveryLine->getLabel(), 'COTISATION') === 0) {
-                $line->setBreakdown([LineBreakdown::]);
+                $line->setBreakdown([LineBreakdown::RSA_NAV_CONTRIBUTION]);
                 $line->breakdownInternalTransfer = $line->getAmount();
             } else {
-                $line->setBreakdown([LineBreakdown::CHECK]);
-                $line->breakdownCheck = $line->getAmount();
+                // Supérieur à 100€, c'est un renouvellement d'avion
+                $line->setBreakdown([LineBreakdown::PLANE_RENEWAL]);
+                $line->breakdownPlaneRenewal = 100;
+                $line->breakdownCustomerFees = $line->getAmount() - 100;
+                if ($line->breakdownCustomerFees > 0) {
+                    $line->addBreakdown(LineBreakdown::CUSTOMER_FEES);
+                }
             }
         }
 

@@ -28,7 +28,6 @@ interface CheckDeliveryLineRepository
     /**
      * @param int $id
      * @return CheckDeliveryLine
-     * @throws CheckDeliveryLineNotFoundException
      */
     public function findCheckDeliveryLineOfId(int $id): CheckDeliveryLine | null;
 }
