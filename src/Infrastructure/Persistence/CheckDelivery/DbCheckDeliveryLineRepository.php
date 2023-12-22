@@ -36,7 +36,8 @@ class DbCheckDeliveryLineRepository implements CheckDeliveryLineRepository
 
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return $this->entityManager->getRepository(CheckDeliveryLine::class)->findBy($criteria, $orderBy, $limit, $offset);
+        return $this->entityManager->getRepository(CheckDeliveryLine::class)
+            ->findBy($criteria, $orderBy, $limit, $offset);
     }
 
     public function findCheckDeliveryLineOfId(int $id): CheckDeliveryLine | null

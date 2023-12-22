@@ -34,7 +34,7 @@ final class CheckDeliveryImportService
             $checkDeliveryLine = new CheckDeliveryLine();
             $row = $rowIterator->current();
             $cellIterator = $row->getCellIterator();
-            $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+            $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells,
             $cells = [];
             foreach ($cellIterator as $cell) {
                 $cells[] = $cell->getValue();

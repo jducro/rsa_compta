@@ -61,7 +61,8 @@ class ListLineEditAction extends Action
                 $checkCount = $matches[1];
             }
             $vars['check_count'] = $checkCount;
-            $vars['check_deliveries'] = $this->checkDeliveryRepository->findByDifference($line->getAmount(), $checkCount, $line->getDate());
+            $vars['check_deliveries'] = $this->checkDeliveryRepository
+                ->findByDifference($line->getAmount(), $checkCount, $line->getDate());
         }
         $this->container->get('view')->render($this->response, 'edit_line.html.twig', $vars);
         return $this->response;
@@ -69,14 +70,18 @@ class ListLineEditAction extends Action
 
     protected function convertCheckDelivery($line): Response
     {
-        $checkDelivery = $this->checkDeliveryRepository->findCheckDeliveryOfId($this->request->getParsedBody()['check_delivery']);
+        $checkDelivery = $this->checkDeliveryRepository
+            ->findCheckDeliveryOfId($this->request->getParsedBody()['check_delivery']);
 
         foreach ($checkDelivery->getLines() as $checkDeliveryLine) {
             $line = new Line();
             $line->setType('CHQ');
             $line->setName($checkDeliveryLine->getName());
             $line->setLabel($checkDeliveryLine->getLabel());
-            $line->setDescription("Chèque n°" . $checkDeliveryLine->getCheckNumber() . " remis le " . $checkDelivery->getDate()->format('d/m/Y'));
+            $line->setDescription(
+                "Chèque n°" . $checkDeliveryLine->getCheckNumber() . " remis le " . $checkDelivery
+                    ->getDate()->format('d/m/Y')
+            );
             $line->setAmount($checkDeliveryLine->getAmount());
             if (strpos($checkDeliveryLine->getLabel(), 'COTISATION') === 0) {
                 $line->setBreakdown([LineBreakdown::]);

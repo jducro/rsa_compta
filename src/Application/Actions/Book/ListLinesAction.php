@@ -55,7 +55,11 @@ class ListLinesAction extends Action
 
     protected function getQueryBuilder(): QueryBuilder
     {
-        $ignoredBreakdowns = [LineBreakdown::PAYPAL_FEES, LineBreakdown::SOGECOM_FEES, LineBreakdown::INTERNAL_TRANSFER];
+        $ignoredBreakdowns = [
+            LineBreakdown::PAYPAL_FEES,
+            LineBreakdown::SOGECOM_FEES,
+            LineBreakdown::INTERNAL_TRANSFER
+        ];
         $qb = $this->lineRepository->getQueryBuilder();
         $qb->where('l.breakdown IS NULL OR l.breakdown NOT IN (:breakdown)');
         $qb->setParameter('breakdown', $ignoredBreakdowns);

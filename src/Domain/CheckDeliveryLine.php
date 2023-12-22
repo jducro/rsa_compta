@@ -32,7 +32,6 @@ final class CheckDeliveryLine implements \JsonSerializable
 
     public function __construct()
     {
-
     }
 
     public function setCheckNumber(string $checkNumber): void

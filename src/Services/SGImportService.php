@@ -104,7 +104,13 @@ final class SGImportService
         }
         if ($line->getLabel() === 'AUTRES VIREMENTS EMIS') {
             $line->setType('VRT');
-            if ((strpos($line->getDescription(), 'RBTS FRAIS PEN') !== false || strpos($line->getDescription(), 'RBT FRAIS PEN') !== false) && $line->getAmount() < 0) {
+            if (
+                (
+                    strpos($line->getDescription(), 'RBTS FRAIS PEN') !== false
+                    || strpos($line->getDescription(), 'RBT FRAIS PEN') !== false
+                )
+                && $line->getAmount() < 0
+            ) {
                 $line->setBreakdown([LineBreakdown::PEN_REFUND]);
                 $line->breakdownPenRefund = $line->getAmount();
                 $line->setName('PEN');
