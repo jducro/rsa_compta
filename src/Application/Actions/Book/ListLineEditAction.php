@@ -74,28 +74,31 @@ class ListLineEditAction extends Action
             ->findCheckDeliveryOfId($this->request->getParsedBody()['check_delivery']);
 
         foreach ($checkDelivery->getLines() as $checkDeliveryLine) {
-            $line = new Line();
-            $line->setType('CHQ');
-            $line->setName($checkDeliveryLine->getName());
-            $line->setLabel($checkDeliveryLine->getLabel());
-            $line->setDescription(
+            $newLine = new Line();
+            $newLine->setType('CHQ');
+            $newLine->setName($checkDeliveryLine->getName());
+            $newLine->setLabel($checkDeliveryLine->getLabel());
+            $newLine->setDescription(
                 "Chèque n°" . $checkDeliveryLine->getCheckNumber() . " remis le " . $checkDelivery
                     ->getDate()->format('d/m/Y')
             );
-            $line->setAmount($checkDeliveryLine->getAmount());
+            $newLine->setDate($checkDelivery->getDate());
+            $newLine->setAmount($checkDeliveryLine->getAmount());
             if (strpos($checkDeliveryLine->getLabel(), 'COTISATION') === 0) {
-                $line->setBreakdown([LineBreakdown::RSA_NAV_CONTRIBUTION]);
-                $line->breakdownInternalTransfer = $line->getAmount();
+                $newLine->setBreakdown([LineBreakdown::RSA_NAV_CONTRIBUTION]);
+                $newLine->breakdownInternalTransfer = $newLine->getAmount();
             } else {
                 // Supérieur à 100€, c'est un renouvellement d'avion
-                $line->setBreakdown([LineBreakdown::PLANE_RENEWAL]);
-                $line->breakdownPlaneRenewal = 100;
-                $line->breakdownCustomerFees = $line->getAmount() - 100;
-                if ($line->breakdownCustomerFees > 0) {
-                    $line->addBreakdown(LineBreakdown::CUSTOMER_FEES);
+                $newLine->setBreakdown([LineBreakdown::PLANE_RENEWAL]);
+                $newLine->breakdownPlaneRenewal = 100;
+                $newLine->breakdownCustomerFees = $newLine->getAmount() - 100;
+                if ($newLine->breakdownCustomerFees > 0) {
+                    $newLine->addBreakdown(LineBreakdown::CUSTOMER_FEES);
                 }
             }
+            $this->lineRepository->save($newLine);
         }
+        $this->lineRepository->delete($line);
 
         $routeParser = RouteContext::fromRequest($this->request)->getRouteParser();
         $url = $routeParser->urlFor('book');

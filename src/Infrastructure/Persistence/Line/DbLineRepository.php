@@ -49,4 +49,10 @@ class DbLineRepository implements LineRepository
         $this->entityManager->persist($line);
         $this->entityManager->flush();
     }
+
+    public function delete(Line $line): void
+    {
+        $this->entityManager->remove($line);
+        $this->entityManager->flush();
+    }
 }
