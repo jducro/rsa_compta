@@ -73,8 +73,17 @@
         url: '{{ url_for('lines', {filter: filter})}}',
         type: "POST",
       },
+      orderCellsTop: true,
+      fixedHeader: true,
       processing: true,
       serverSide: true,
+      bStateSave: true,
+      fnStateSave: function (oSettings, oData) {
+        localStorage.setItem( 'DataTables', JSON.stringify(oData) );
+      },
+      fnStateLoad: function (oSettings) {
+        return JSON.parse( localStorage.getItem('DataTables') );
+      },
       language: {
         url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json',
       },
@@ -160,7 +169,7 @@
           }
         },
         {
-          data: 'breakdownPenMeeting',
+          data: 'breakdownMeeting',
           render : function (data) {
             return moneyFormat(data);
           }
@@ -207,7 +216,49 @@
             return moneyFormat(data);
           }
         },
-      ]
+      ],
+      initComplete: function () {
+        this.api()
+            .columns()
+            .every(function () {
+                let column = this;
+                let title = column.footer().textContent;
+
+                // Create input element
+                let input = document.createElement('input');
+                input.placeholder = title;
+                column.footer().replaceChildren(input);
+
+                // Event listener for user input
+                input.addEventListener('keyup', () => {
+                    if (column.search() !== this.value) {
+                        column.search(input.value).draw();
+                    }
+                });
+                // Create select element
+                //let select = document.createElement('select');
+                //select.add(new Option(''));
+                //column.footer().replaceChildren(select);
+
+                // Apply listener for user change in value
+                //select.addEventListener('change', function () {
+                //    var val = DataTable.util.escapeRegex(select.value);
+
+                //    column
+                //        .search(val ? '^' + val + '$' : '', true, false)
+                //        .draw();
+                //});
+
+                // Add list of options
+                //column
+                //    .data()
+                //    .unique()
+                //    .sort()
+                //    .each(function (d, j) {
+                //        select.add(new Option(d));
+                //    });
+            });
+    }
   });
   </script>
 {% endblock %}

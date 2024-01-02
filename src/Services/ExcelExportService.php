@@ -91,8 +91,12 @@ final class ExcelExportService
         $sheet->setCellValue('D' . $this->currentLine, 'CA Brut');
         $sheet->setCellValue('F' . $this->currentLine, '=G' . $sumsLine . '+H' . $sumsLine . '+K' . $sumsLine . '+T' . $sumsLine);
         $sheet->setCellValue('G' . $this->currentLine, 'Recettes totales hors cotisations');
+        $sheet->getStyle('G' . $this->currentLine)
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         $sheet->setCellValue('I' . $this->currentLine, '=I' . $sumsLine . '/50');
         $sheet->setCellValue('J' . $this->currentLine, 'Nb mb RSANav calculé');
+        $sheet->getStyle('J' . $this->currentLine)
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         $this->currentLine ++;
         $sheet->setCellValue('D' . $this->currentLine, 'Cotisations encaissées et dons');
         $sheet->setCellValue('F' . $this->currentLine, '=I' . $sumsLine . '+J' . $sumsLine . '+R' . $sumsLine);
@@ -103,7 +107,8 @@ final class ExcelExportService
         $sheet->setCellValue('D' . $this->currentLine, 'Charges Brutes');
         $sheet->setCellValue('F' . $this->currentLine, '=M' . $sumsLine . '+N' . $sumsLine . '+O' . $sumsLine . '+P' . $sumsLine . '+Q' . $sumsLine);
         $sheet->setCellValue('G' . $this->currentLine, 'Y compris rbt frais des PEN');
-        $sheet->setCellValue('G' . $this->currentLine, 'Y compris rbt frais des PEN');
+        $sheet->getStyle('G' . $this->currentLine)
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle('D' . $this->currentLine . ':F' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFBCCBE1');
@@ -130,7 +135,7 @@ final class ExcelExportService
             ->getStartColor()->setARGB('FF9FCBDA');
         $this->currentLine ++;
         $sheet->setCellValue('D' . $this->currentLine, 'RESULTAT NET');
-        $sheet->getStyle('D' . ($sumsLine + 1) . ':D' . $this->currentLine)
+        $sheet->getStyle('D' . $sumsLine . ':F' . $this->currentLine)
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
         $sheet->getStyle('D' . ($sumsLine + 1) . ':F' . $this->currentLine)
             ->getFont()->setBold(true);

@@ -23,6 +23,9 @@ final class CheckDelivery implements \JsonSerializable
     #[Column(type: 'float')]
     private float $amount;
 
+    #[Column(type: 'boolean')]
+    private bool $converted = false;
+
     /** @var  Collection<int, CheckDeliveryLine> */
     #[OneToMany(targetEntity: CheckDeliveryLine::class, mappedBy: 'checkDelivery')]
     private Collection $lines;
@@ -56,6 +59,16 @@ final class CheckDelivery implements \JsonSerializable
     public function getAmount(): float
     {
         return $this->amount;
+    }
+
+    public function setConverted(bool $converted): void
+    {
+        $this->converted = $converted;
+    }
+
+    public function isConverted(): bool
+    {
+        return $this->converted;
     }
 
     public function addLine(CheckDeliveryLine $line): void

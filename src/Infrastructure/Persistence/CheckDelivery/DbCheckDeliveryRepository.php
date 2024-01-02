@@ -44,6 +44,7 @@ class DbCheckDeliveryRepository implements CheckDeliveryRepository
     {
         $qb = $this->entityManager->getRepository(CheckDelivery::class)->createQueryBuilder('cd');
         $qb->leftJoin('cd.lines', 'l', Join::ON);
+        $qb->where('cd.converted = false');
         $qb->orderBy('ABS(cd.amount - :amount)', 'ASC');
         $qb->addOrderBy('ABS(COUNT(l.id) - :count)', 'ASC');
         $qb->addOrderBy('ABS(DATE_DIFF(cd.date, :date))', 'ASC');

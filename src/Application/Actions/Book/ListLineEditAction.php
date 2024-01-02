@@ -99,6 +99,8 @@ class ListLineEditAction extends Action
             $this->lineRepository->save($newLine);
         }
         $this->lineRepository->delete($line);
+        $checkDelivery->setConverted(true);
+        $this->checkDeliveryRepository->save($checkDelivery);
 
         $routeParser = RouteContext::fromRequest($this->request)->getRouteParser();
         $url = $routeParser->urlFor('book');

@@ -59,7 +59,7 @@ final class PaypalImportService
         } elseif ($line->getAmount() > 0) {
             // Inférieur à 100€, c'est une contribution RSA
             $line->setBreakdown([LineBreakdown::RSA_NAV_CONTRIBUTION]);
-            $line->breakdownRSAContribution = $line->getAmount();
+            $line->breakdownRSANavContribution = $line->getAmount();
         } else {
             // Montant négatif, c'est un transfert vers la SG
             $line->setBreakdown([LineBreakdown::INTERNAL_TRANSFER]);

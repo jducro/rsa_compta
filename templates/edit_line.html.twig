@@ -104,7 +104,7 @@
         var value = $(this).val();
         if ($(this).is(':checked')) {
           $('.breakdown-input-' + value).show();
-          if (getTotal() === 0) {
+          if (getTotal() === 0 || getTotal() === '0.00') {
             $('.breakdown-input-' + value + ' input').val('{{ line.amount|format_currency('EUR', locale='fr') }}');
           }
         } else {
@@ -121,11 +121,10 @@
           value = parseFloat(value);
           total += value;
         });
-        return total;
+        return total.toFixed(2);
       }
       function validateForm() {
         const checkDelivery = $('select[name="check_delivery"]');
-        console.log(checkDelivery.length);
         if (checkDelivery.length > 0) {
           console.log(checkDelivery.val());
           if (checkDelivery.val() === null) {
@@ -139,7 +138,7 @@
               return false;
             }
           }
-          if ({{ check_count }} != option.data('count')) {
+          if ({{ check_count|default(0) }} != option.data('count')) {
             if (!confirm('Le nombre de chèques ne correspond pas à la somme des chèques')) {
               return false;
             }
@@ -152,8 +151,8 @@
             return false;
           }
         }
-        // $('button[type="submit"]').prop('disabled', false);
-        return false;
+        $('button[type="submit"]').prop('disabled', false);
+        return true;
       }
       $('.breakdown-input').change(function() {
         validateForm();

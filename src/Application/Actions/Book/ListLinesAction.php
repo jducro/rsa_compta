@@ -34,6 +34,21 @@ class ListLinesAction extends Action
             $qb->setParameter('search', '%' . $params['search']['value'] . '%');
         }
 
+        foreach ($params['columns'] as $column) {
+            if ($column['search']['value'] !== '') {
+                match($column['data']) {
+                    'credit' => $qb->andWhere('l.amount LIKE :search_' . $column['data']),
+                    'debit' => $qb->andWhere('l.amount LIKE :search_' . $column['data']),
+                    'date' => $qb->andWhere('l.' . $column['data'] . ' LIKE :search_' . $column['data']),
+                    'breakdown' => $column['search']['value'] ? $qb->andWhere('l.breakdown IS NOT NULL') : $qb->andWhere('l.breakdown IS NULL'),
+                    default => $qb->andWhere('l.' . $column['data'] . ' LIKE :search_' . $column['data']),
+                };
+                if ($column['data'] !== 'breakdown') {
+                    $qb->setParameter('search_' . $column['data'], '%' . $column['search']['value'] . '%');
+                }
+            }
+        }
+
         $qbLines = $qb;
         if (!empty($params['order'])) {
             $sort = $params['columns'][$params['order'][0]['column']]['data'];

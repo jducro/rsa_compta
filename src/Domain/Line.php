@@ -199,6 +199,16 @@ final class Line implements \JsonSerializable
             'breakdownRSANavContribution' => $this->breakdownRSANavContribution,
             'breakdownRSAContribution' => $this->breakdownRSAContribution,
             'breakdownFollowUpNav' => $this->breakdownFollowUpNav,
+            'breakdownInternalTransfer' => $this->breakdownInternalTransfer,
+            'breakdownPenRefund' => $this->breakdownPenRefund,
+            'breakdownMeeting' => $this->breakdownMeeting,
+            'breakdownPaypalFees' => $this->breakdownPaypalFees,
+            'breakdownSogecomFees' => $this->breakdownSogecomFees,
+            'breakdownOsac' => $this->breakdownOsac,
+            'breakdownOther' => $this->breakdownOther,
+            'breakdownDonation' => $this->breakdownDonation,
+            'breakdownVibrationDebit' => $this->breakdownVibrationDebit,
+            'breakdownVibrationCredit' => $this->breakdownVibrationCredit,
             'description' => $this->description,
         ];
     }
