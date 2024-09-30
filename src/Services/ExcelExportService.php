@@ -64,7 +64,8 @@ final class ExcelExportService
         }
     }
 
-    protected function insertFeeLines() {
+    protected function insertFeeLines()
+    {
         $sogecomFees = $this->lineRepository->getQueryBuilder()
         ->select('SUM(l.breakdownSogecomFees)')
         ->getQuery()->getSingleScalarResult();
@@ -114,38 +115,50 @@ final class ExcelExportService
         $sheet->getStyle('D' . $this->currentLine . ':T' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFECF1DF');
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'CA Brut');
-        $sheet->setCellValue('F' . $this->currentLine, '=G' . $sumsLine . '+H' . $sumsLine . '+K' . $sumsLine . '+T' . $sumsLine);
-        $sheet->setCellValue('G' . $this->currentLine, 'Recettes totales hors cotisations');
+        $sheet->setCellValue(
+            'F' . $this->currentLine,
+            '=G' . $sumsLine . '+H' . $sumsLine . '+K' . $sumsLine . '+T' . $sumsLine
+        );
+        $sheet->setCellValue(
+            'G' . $this->currentLine,
+            'Recettes totales hors cotisations'
+        );
         $sheet->getStyle('G' . $this->currentLine)
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         $sheet->setCellValue('I' . $this->currentLine, '=I' . $sumsLine . '/50');
         $sheet->setCellValue('J' . $this->currentLine, 'Nb mb RSANav calculé');
         $sheet->getStyle('J' . $this->currentLine)
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'Cotisations encaissées et dons');
         $sheet->setCellValue('F' . $this->currentLine, '=I' . $sumsLine . '+J' . $sumsLine . '+R' . $sumsLine);
         $sheet->getStyle('D' . ($this->currentLine - 1) . ':F' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFDEE5F0');
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'Charges Brutes');
-        $sheet->setCellValue('F' . $this->currentLine, '=M' . $sumsLine . '+N' . $sumsLine . '+O' . $sumsLine . '+P' . $sumsLine . '+Q' . $sumsLine);
+        $sheet->setCellValue(
+            'F' . $this->currentLine,
+            '=M' . $sumsLine . '+N' . $sumsLine . '+O' . $sumsLine . '+P' . $sumsLine . '+Q' . $sumsLine
+        );
         $sheet->setCellValue('G' . $this->currentLine, 'Y compris rbt frais des PEN');
         $sheet->getStyle('G' . $this->currentLine)
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle('D' . $this->currentLine . ':F' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFBCCBE1');
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'RESULTAT BRUT');
-        $sheet->setCellValue('F' . $this->currentLine, '=F' . ($this->currentLine - 1) . '+F' . ($this->currentLine - 2) . '+F' . ($this->currentLine - 3));
+        $sheet->setCellValue(
+            'F' . $this->currentLine,
+            '=F' . ($this->currentLine - 1) . '+F' . ($this->currentLine - 2) . '+F' . ($this->currentLine - 3)
+        );
         $sheet->getStyle('D' . $this->currentLine . ':F' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FF92FCCF');
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'CA Net');
         $sheet->setCellValue('F' . $this->currentLine, '=G' . $sumsLine . '/2+K' . $sumsLine . '+T' . $sumsLine);
         $this->currentLine ++;
@@ -154,19 +167,27 @@ final class ExcelExportService
         $sheet->getStyle('D' . ($this->currentLine - 1) . ':F' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFBFDDE7');
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'Charges Nettes');
-        $sheet->setCellValue('F' . $this->currentLine, '=(L' . $sumsLine . '+H' . $sumsLine . '+G' . $sumsLine . '/2)+M' . $sumsLine . '+N' . $sumsLine . '+O' . $sumsLine . '+P' . $sumsLine . '+Q' . $sumsLine . '+R' . $sumsLine);
+        $sheet->setCellValue(
+            'F' . $this->currentLine,
+            '=(L' . $sumsLine . '+H' . $sumsLine . '+G' . $sumsLine
+            . '/2)+M' . $sumsLine . '+N' . $sumsLine . '+O' . $sumsLine . '+P' . $sumsLine
+            . '+Q' . $sumsLine . '+R' . $sumsLine
+        );
         $sheet->getStyle('D' . $this->currentLine . ':F' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FF9FCBDA');
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'RESULTAT NET');
         $sheet->getStyle('D' . $sumsLine . ':F' . $this->currentLine)
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
         $sheet->getStyle('D' . ($sumsLine + 1) . ':F' . $this->currentLine)
             ->getFont()->setBold(true);
-        $sheet->setCellValue('F' . $this->currentLine, '=F' . ($this->currentLine - 1) . '+F' . ($this->currentLine - 2) . '+F' . ($this->currentLine - 3));
+        $sheet->setCellValue(
+            'F' . $this->currentLine,
+            '=F' . ($this->currentLine - 1) . '+F' . ($this->currentLine - 2) . '+F' . ($this->currentLine - 3)
+        );
         $sheet->getStyle('D' . $this->currentLine . ':F' . $this->currentLine)->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FF92FCA2');
