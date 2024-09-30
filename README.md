@@ -19,7 +19,7 @@ Replace `[my-app-name]` with the desired directory name for your new application
 * Point your virtual host document root to your new application's `public/` directory.
 * Ensure `logs/` is web writable.
 
-To run the application in development, you can run these commands 
+To run the application in development, you can run these commands
 
 ```bash
 cd [my-app-name]
@@ -39,4 +39,9 @@ Run this command in the application directory to run the test suite
 composer test
 ```
 
-That's it! Now go build something cool.
+
+Please use doctrine to manage the database. You can run the following command to see the available commands:
+
+```bash
+php vendor/bin/doctrine
+```

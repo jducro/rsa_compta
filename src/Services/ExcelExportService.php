@@ -32,6 +32,8 @@ final class ExcelExportService
 
         $this->insertLines();
 
+        $this->insertFeeLines();
+
         $this->insertSums();
 
         $writer = new Xlsx($this->spreadsheet);
@@ -60,6 +62,31 @@ final class ExcelExportService
             }
             $this->from += $this->step;
         }
+    }
+
+    protected function insertFeeLines() {
+        $sogecomFees = $this->lineRepository->getQueryBuilder()
+        ->select('SUM(l.breakdownSogecomFees)')
+        ->getQuery()->getSingleScalarResult();
+        $this->activeWorksheet->setCellValue('A' . $this->currentLine, "Sogecom");
+        $this->activeWorksheet->setCellValue('B' . $this->currentLine, "31/12/2023");
+        $this->activeWorksheet->setCellValue('C' . $this->currentLine, "Sogecom");
+        $this->activeWorksheet->setCellValue('D' . $this->currentLine, "Frais annuels transactions Sogecom");
+        $this->activeWorksheet->setCellValue('E' . $this->currentLine, self::formatCurrency($sogecomFees));
+        $this->activeWorksheet
+        ->setCellValue('O' . $this->currentLine, self::formatCurrency($sogecomFees));
+        $this->currentLine += 1;
+        $paypalFees = $this->lineRepository->getQueryBuilder()
+        ->select('SUM(l.breakdownPaypalFees)')
+        ->getQuery()->getSingleScalarResult();
+        $this->activeWorksheet->setCellValue('A' . $this->currentLine, "PAYPAL");
+        $this->activeWorksheet->setCellValue('B' . $this->currentLine, "31/12/2023");
+        $this->activeWorksheet->setCellValue('C' . $this->currentLine, "PAYPAL");
+        $this->activeWorksheet->setCellValue('D' . $this->currentLine, "Frais annuels transactions Paypal");
+        $this->activeWorksheet->setCellValue('E' . $this->currentLine, self::formatCurrency($paypalFees));
+        $this->activeWorksheet
+        ->setCellValue('N' . $this->currentLine, self::formatCurrency($paypalFees));
+        $this->currentLine += 1;
     }
 
     protected function insertSums()
