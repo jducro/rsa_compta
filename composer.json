@@ -29,7 +29,7 @@
         "php-di/php-di": "^7.0",
         "phpoffice/phpspreadsheet": "^1.29",
         "slim/psr7": "^1.6",
-        "slim/slim": "^4.10",
+        "slim/slim": "^4.14",
         "slim/twig-view": "^3.3",
         "symfony/cache": "^6.4",
         "twig/intl-extra": "^3.13",
