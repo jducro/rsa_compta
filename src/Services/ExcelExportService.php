@@ -161,7 +161,7 @@ final class ExcelExportService
         $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'CA Net');
         $sheet->setCellValue('F' . $this->currentLine, '=G' . $sumsLine . '/2+K' . $sumsLine . '+T' . $sumsLine);
-        $this->currentLine ++;
+        $this->currentLine++;
         $sheet->setCellValue('D' . $this->currentLine, 'Cotisations nettes');
         $sheet->setCellValue('F' . $this->currentLine, '=I' . $sumsLine . '+J' . $sumsLine . '+R' . $sumsLine);
         $sheet->getStyle('D' . ($this->currentLine - 1) . ':F' . $this->currentLine)->getFill()
