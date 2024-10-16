@@ -83,6 +83,17 @@ abstract class Action
     protected function respond(ActionPayload $payload): Response
     {
         $json = json_encode($payload, JSON_PRETTY_PRINT);
+        if (!$json) {
+            $message = \json_last_error_msg();
+            $data = $payload->getData();
+            $id = null;
+            foreach ($data['data'] as $line) {
+                if ($line->getDescription() != mb_convert_encoding($line->getDescription(), 'UTF-8', 'UTF-8')) {
+                    $id = $line->getId();
+                }
+            }
+            $json = json_encode(['error' => 'An error occurred ' . $message. ' line: ' . $id], JSON_PRETTY_PRINT);
+        }
         $this->response->getBody()->write($json);
 
         return $this->response

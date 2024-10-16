@@ -42,7 +42,7 @@ final class SogecomImportService
         $line = new Line();
         $timezone = new \DateTimeZone('Europe/Paris');
         $line->setDate(\DateTimeImmutable::createFromFormat("d/m/Y H:i:s", $data[0], $timezone));
-        $line->setName($data[3]);
+        $line->setName(mb_convert_encoding($data[3], 'UTF-8', 'UTF-8'));
         $line->setType("Sogecom");
         $line->setAmount($this->toFloat($data[1]));
         if ($line->getAmount() >= 100) {
@@ -65,7 +65,7 @@ final class SogecomImportService
             $line->breakdownInternalTransfer = $line->getAmount();
             $line->setLabel('Virement vers la SG');
         }
-        $line->setDescription($data[4] . "\n" . $data[5]);
+        $line->setDescription(mb_convert_encoding($data[4] . "\n" . $data[5], 'UTF-8', 'UTF-8'));
 
         return $line;
     }
