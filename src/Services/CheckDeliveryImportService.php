@@ -45,7 +45,7 @@ final class CheckDeliveryImportService
             $checkDeliveryLine->setCheckNumber($cells[0]);
             $checkDeliveryLine->setName($cells[1]);
             $checkDeliveryLine->setLabel($cells[2]);
-            $checkDeliveryLine->setAmount($cells[3]);
+            $checkDeliveryLine->setAmount(\is_string($cells[3]) ? $this->doMath($cells[3]) : $cells[3]);
 
             $this->em->persist($checkDeliveryLine);
             $checkDelivery->addLine($checkDeliveryLine);
@@ -55,5 +55,11 @@ final class CheckDeliveryImportService
 
         $this->em->flush();
         $this->em->getConnection()->commit();
+    }
+
+    private function doMath(string $value): float
+    {
+        eval('$o = ' . preg_replace('/[^0-9\+\-\*\/\(\)\.]/', '', $value) . ';');
+        return $o;
     }
 }
