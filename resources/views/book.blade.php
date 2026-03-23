@@ -241,14 +241,22 @@
         gotoInput.attr('max', api.page.info().pages);
         gotoInput.val(api.page.info().page + 1);
 
+        function gotoPage(val) {
+            let page = parseInt(val) - 1;
+            let totalPages = api.page.info().pages;
+            if (page >= 0 && page < totalPages) {
+                api.page(page).draw('page');
+            }
+        }
+
         gotoInput.on('keydown', function (e) {
             if (e.key === 'Enter') {
-                let page = parseInt($(this).val()) - 1;
-                let totalPages = api.page.info().pages;
-                if (page >= 0 && page < totalPages) {
-                    api.page(page).draw('page');
-                }
+                gotoPage($(this).val());
             }
+        });
+
+        gotoInput.on('blur', function () {
+            gotoPage($(this).val());
         });
 
         wrapper.append(gotoLabel).append(gotoInput);
