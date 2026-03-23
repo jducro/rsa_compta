@@ -13,17 +13,28 @@ final class SogecomImportService
 
         $firstLine = true;
 
-        while (($line = fgets($handle)) !== false) {
+        while (($rawLine = fgets($handle)) !== false) {
             if ($firstLine) {
                 $firstLine = false;
                 continue;
             }
-            $line = mb_convert_encoding($line, 'ISO-8859-1', 'UTF-8');
+            $line = mb_convert_encoding($rawLine, 'ISO-8859-1', 'UTF-8');
             $data = str_getcsv($line, ";");
-            $this->createLine($data)->save();
-            $fees = $this->createFeesLine($data);
-            if ($fees) {
-                $fees->save();
+
+            $mainHash = $this->computeHash($rawLine, 'main');
+            if (!Line::where('import_hash', $mainHash)->exists()) {
+                $main = $this->createLine($data);
+                $main->import_hash = $mainHash;
+                $main->save();
+            }
+
+            $feesHash = $this->computeHash($rawLine, 'fees');
+            if (!Line::where('import_hash', $feesHash)->exists()) {
+                $fees = $this->createFeesLine($data);
+                if ($fees) {
+                    $fees->import_hash = $feesHash;
+                    $fees->save();
+                }
             }
         }
 
@@ -79,6 +90,19 @@ final class SogecomImportService
             return null;
         }
         return $line;
+    }
+
+    /**
+     * Compute a SHA-256 hash over the raw CSV line and a row-type suffix so
+     * that the main line and the fees line produced from the same source row
+     * each get a unique, stable identifier.
+     *
+     * The hash is computed over the original raw bytes (before mb_convert_encoding)
+     * so it remains stable across re-imports.
+     */
+    private function computeHash(string $rawLine, string $suffix): string
+    {
+        return hash('sha256', $rawLine . $suffix);
     }
 
     private function toFloat(string $value): float
