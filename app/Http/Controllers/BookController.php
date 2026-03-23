@@ -247,5 +247,4 @@ class BookController extends Controller
 
         return (float) str_replace(',', '.', (string) preg_replace('/[^-0-9,]/', '', $currency));
     }
-
 }
