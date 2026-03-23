@@ -1,0 +1,37 @@
+#!/bin/sh
+set -e
+PHPCS="vendor/bin/phpcs"
+PHPCBF="vendor/bin/phpcbf"
+PHPSTAN="vendor/bin/phpstan"
+STAGED=$(git diff --cached --name-only --diff-filter=ACM | grep '\.php$' || true)
+if [ -z "$STAGED" ]; then
+    exit 0
+fi
+echo "Running phpcs / phpcbf on staged PHP files..."
+$PHPCBF --standard=phpcs.xml $STAGED
+CBFEXIT=$?
+if [ $CBFEXIT -eq 2 ]; then
+    echo "phpcbf encountered a fatal error. Aborting commit."
+    exit 1
+fi
+if [ $CBFEXIT -eq 1 ]; then
+    echo "phpcbf fixed some violations; re-staging modified files."
+    git add $STAGED
+fi
+$PHPCS --standard=phpcs.xml $STAGED
+CSEXIT=$?
+if [ $CSEXIT -ne 0 ]; then
+    echo ""
+    echo "phpcs found violations that could not be auto-fixed. Please fix them before committing."
+    exit 1
+fi
+echo "Running phpstan on staged PHP files..."
+$PHPSTAN analyse $STAGED
+STANEXIT=$?
+if [ $STANEXIT -ne 0 ]; then
+    echo ""
+    echo "phpstan found errors. Please fix them before committing."
+    exit 1
+fi
+echo "All checks passed."
+exit 0
