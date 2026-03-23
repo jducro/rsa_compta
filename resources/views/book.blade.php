@@ -70,7 +70,7 @@
       }
       return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(data);
     }
-    $('#book').DataTable({
+    let bookTable = $('#book').DataTable({
       ajax: {
         url: '{{ route('lines') }}',
         type: "POST",
@@ -222,26 +222,67 @@
           }
         },
       ],
+      drawCallback: function () {
+          let api = this.api();
+          // Update go-to-page input on every draw (page changes, filter changes, etc.)
+          $(api.table().container()).find('.dt-goto-page input')
+              .attr('max', api.page.info().pages)
+              .val(api.page.info().page + 1);
+      },
       initComplete: function () {
-        this.api()
-            .columns()
-            .every(function () {
-                let column = this;
-                let title = column.footer().textContent;
+        let api = this.api();
 
-                // Create input element
-                let input = document.createElement('input');
-                input.placeholder = title;
-                column.footer().replaceChildren(input);
+        // Add go-to-page input as a sibling of .dt-paging so DT never clears it on re-draw
+        let paginate = $(api.table().container()).find('.dt-paging');
+        let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle; display: inline-block;"></span>');
+        let gotoLabel = $('<label for="dt-goto-page-input"> Page </label>');
+        let gotoInput = $('<input id="dt-goto-page-input" type="number" min="1" style="width: 60px; margin: 0 4px;" />');
 
-                // Event listener for user input
-                input.addEventListener('keyup', () => {
-                    if (column.search() !== this.value) {
-                        column.search(input.value).draw();
-                    }
-                });
+        gotoInput.attr('max', api.page.info().pages);
+        gotoInput.val(api.page.info().page + 1);
+
+        function gotoPage(val) {
+            let page = parseInt(val) - 1;
+            let totalPages = api.page.info().pages;
+            if (page >= 0 && page < totalPages) {
+                api.page(page).draw('page');
+            }
+        }
+
+        gotoInput.on('keydown', function (e) {
+            if (e.key === 'Enter') {
+                gotoPage($(this).val());
+            }
+        });
+
+        gotoInput.on('blur', function () {
+            gotoPage($(this).val());
+        });
+
+        wrapper.append(gotoLabel).append(gotoInput);
+        paginate.after(wrapper);
+
+        // Create per-column filter inputs
+        api.columns().every(function () {
+            let column = this;
+            let title = column.footer().textContent;
+
+            // Create input element
+            let input = document.createElement('input');
+            input.placeholder = title;
+            column.footer().replaceChildren(input);
+
+            // Restore saved filter value from state
+            input.value = column.search();
+
+            // Event listener for user input
+            input.addEventListener('keyup', () => {
+                if (column.search() !== input.value) {
+                    column.search(input.value).draw();
+                }
             });
-    }
-  });
+        });
+      }
+    });
   </script>
 @endsection
