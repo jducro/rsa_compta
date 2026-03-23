@@ -224,39 +224,35 @@
       ],
       drawCallback: function () {
           let api = this.api();
-          let container = $(api.table().container());
-
-          // Re-inject go-to-page input after every draw (DataTables 2.x re-renders .dt-paging on draw)
-          let paginate = container.find('.dt-paging');
-          if (paginate.length && !paginate.find('.dt-goto-page').length) {
-              let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle; display: inline-block;"></span>');
-              let gotoLabel = $('<span> Page </span>');
-              let gotoInput = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
-
-              gotoInput.attr('max', api.page.info().pages);
-              gotoInput.val(api.page.info().page + 1);
-
-              gotoInput.on('keydown', function (e) {
-                  if (e.key === 'Enter') {
-                      let page = parseInt($(this).val()) - 1;
-                      let totalPages = api.page.info().pages;
-                      if (page >= 0 && page < totalPages) {
-                          api.page(page).draw('page');
-                      }
-                  }
-              });
-
-              wrapper.append(gotoLabel).append(gotoInput);
-              paginate.append(wrapper);
-          } else {
-              // Update max and current value on re-draw
-              paginate.find('.dt-goto-page input')
-                  .attr('max', api.page.info().pages)
-                  .val(api.page.info().page + 1);
-          }
+          // Update go-to-page input on every draw (page changes, filter changes, etc.)
+          $(api.table().container()).find('.dt-goto-page input')
+              .attr('max', api.page.info().pages)
+              .val(api.page.info().page + 1);
       },
       initComplete: function () {
         let api = this.api();
+
+        // Add go-to-page input as a sibling of .dt-paging so DT never clears it on re-draw
+        let paginate = $(api.table().container()).find('.dt-paging');
+        let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle; display: inline-block;"></span>');
+        let gotoLabel = $('<span> Page </span>');
+        let gotoInput = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
+
+        gotoInput.attr('max', api.page.info().pages);
+        gotoInput.val(api.page.info().page + 1);
+
+        gotoInput.on('keydown', function (e) {
+            if (e.key === 'Enter') {
+                let page = parseInt($(this).val()) - 1;
+                let totalPages = api.page.info().pages;
+                if (page >= 0 && page < totalPages) {
+                    api.page(page).draw('page');
+                }
+            }
+        });
+
+        wrapper.append(gotoLabel).append(gotoInput);
+        paginate.after(wrapper);
 
         // Create per-column filter inputs
         api.columns().every(function () {
