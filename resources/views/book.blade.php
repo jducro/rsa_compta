@@ -224,15 +224,16 @@
       ],
       drawCallback: function () {
           let api = this.api();
-          let paginate = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-          paginate.find('.dt-goto-page input').attr('max', api.page.info().pages);
+          // Update max page count on every draw (DataTables 2.x uses .dt-paging)
+          $(api.table().container()).find('.dt-paging .dt-goto-page input').attr('max', api.page.info().pages);
       },
       initComplete: function () {
         let api = this.api();
 
         // Add go-to-page input next to pagination
-        let paginate = $(api.table().container()).find('.dataTables_paginate');
-        let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle;"></span>');
+        // DataTables 2.x wraps pagination in .dt-paging (not .dataTables_paginate)
+        let paginate = $(api.table().container()).find('.dt-paging');
+        let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle; display: inline-block;"></span>');
         let gotoLabel = $('<span> Page </span>');
         let gotoInput = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
 
