@@ -235,8 +235,8 @@
         // Add go-to-page input as a sibling of .dt-paging so DT never clears it on re-draw
         let paginate = $(api.table().container()).find('.dt-paging');
         let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle; display: inline-block;"></span>');
-        let gotoLabel = $('<span> Page </span>');
-        let gotoInput = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
+        let gotoLabel = $('<label for="dt-goto-page-input"> Page </label>');
+        let gotoInput = $('<input id="dt-goto-page-input" type="number" min="1" style="width: 60px; margin: 0 4px;" />');
 
         gotoInput.attr('max', api.page.info().pages);
         gotoInput.val(api.page.info().page + 1);
