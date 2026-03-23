@@ -68,7 +68,7 @@
       }
       return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(data);
     }
-    $('#book').DataTable({
+    let bookTable = $('#book').DataTable({
       ajax: {
         url: '{{ url_for('lines', {filter: filter})}}',
         type: "POST",
@@ -133,132 +133,151 @@
           }
         },
         {
-          data: 'breakdown_plane_renewal',
+          data: 'breakdownPlaneRenewal',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_customer_fees',
+          data: 'breakdownCustomerFees',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_rsa_nav_contribution',
+          data: 'breakdownRSANavContribution',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_rsa_contribution',
+          data: 'breakdownRSAContribution',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_follow_up_nav',
+          data: 'breakdownFollowUpNav',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_pen_refund',
+          data: 'breakdownPenRefund',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_meeting',
+          data: 'breakdownMeeting',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_paypal_fees',
+          data: 'breakdownPaypalFees',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_sogecom_fees',
+          data: 'breakdownSogecomFees',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_osac',
+          data: 'breakdownOsac',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_other_fees',
+          data: 'breakdownOtherFees',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_donation',
+          data: 'breakdownDonation',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_vibration_debit',
+          data: 'breakdownVibrationDebit',
           render : function (data) {
             return moneyFormat(data);
           }
         },
         {
-          data: 'breakdown_vibration_credit',
+          data: 'breakdownVibrationCredit',
           render : function (data) {
             return moneyFormat(data);
           }
         },
       ],
+      drawCallback: function () {
+          let api = this.api();
+          // Update go-to-page input on every draw (page changes, filter changes, etc.)
+          $(api.table().container()).find('.dt-goto-page input')
+              .attr('max', api.page.info().pages)
+              .val(api.page.info().page + 1);
+      },
       initComplete: function () {
-        this.api()
-            .columns()
-            .every(function () {
-                let column = this;
-                let title = column.footer().textContent;
+        let api = this.api();
 
-                // Create input element
-                let input = document.createElement('input');
-                input.placeholder = title;
-                column.footer().replaceChildren(input);
+        // Add go-to-page input as a sibling of .dt-paging so DT never clears it on re-draw
+        let paginate = $(api.table().container()).find('.dt-paging');
+        let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle; display: inline-block;"></span>');
+        let gotoLabel = $('<span> Page </span>');
+        let gotoInput = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
 
-                // Event listener for user input
-                input.addEventListener('keyup', () => {
-                    if (column.search() !== this.value) {
-                        column.search(input.value).draw();
-                    }
-                });
-                // Create select element
-                //let select = document.createElement('select');
-                //select.add(new Option(''));
-                //column.footer().replaceChildren(select);
+        gotoInput.attr('max', api.page.info().pages);
+        gotoInput.val(api.page.info().page + 1);
 
-                // Apply listener for user change in value
-                //select.addEventListener('change', function () {
-                //    var val = DataTable.util.escapeRegex(select.value);
+        function gotoPage(val) {
+            let page = parseInt(val) - 1;
+            let totalPages = api.page.info().pages;
+            if (page >= 0 && page < totalPages) {
+                api.page(page).draw('page');
+            }
+        }
 
-                //    column
-                //        .search(val ? '^' + val + '$' : '', true, false)
-                //        .draw();
-                //});
+        gotoInput.on('keydown', function (e) {
+            if (e.key === 'Enter') {
+                gotoPage($(this).val());
+            }
+        });
 
-                // Add list of options
-                //column
-                //    .data()
-                //    .unique()
-                //    .sort()
-                //    .each(function (d, j) {
-                //        select.add(new Option(d));
-                //    });
+        gotoInput.on('blur', function () {
+            gotoPage($(this).val());
+        });
+
+        wrapper.append(gotoLabel).append(gotoInput);
+        paginate.after(wrapper);
+
+        // Create per-column filter inputs
+        api.columns().every(function () {
+            let column = this;
+            let title = column.footer().textContent;
+
+            // Create input element
+            let input = document.createElement('input');
+            input.placeholder = title;
+            column.footer().replaceChildren(input);
+
+            // Restore saved filter value from state
+            input.value = column.search();
+
+            // Event listener for user input
+            input.addEventListener('keyup', () => {
+                if (column.search() !== input.value) {
+                    column.search(input.value).draw();
+                }
             });
-    }
-  });
+        });
+      }
+    });
   </script>
 {% endblock %}
