@@ -206,37 +206,11 @@ class BookController extends Controller
         ];
 
         return Line::query()->where(function ($q) use ($ignoredBreakdowns) {
+            // Show lines with no breakdown set yet
             $q->whereNull('breakdown');
+            // Also show lines where breakdown is an empty JSON array
+            $q->orWhere('breakdown', '[]');
+            // Also show lines whose breakdown does NOT consist solely of ignored types
             $q->orWhere(function ($q2) use ($ignoredBreakdowns) {
                 foreach ($ignoredBreakdowns as $breakdown) {
-                    $q2->where('breakdown', 'not like', '%"' . $breakdown . '"%');
-                }
-            });
-        });
-    }
-
-    private function findByDifference(float $amount, int $count, $date): array
-    {
-        $dateStr = $date instanceof \DateTimeInterface ? $date->format('Y-m-d') : (string) $date;
-
-        return CheckDelivery::query()
-            ->leftJoin('check_deliveries_line', 'check_deliveries.id', '=', 'check_deliveries_line.check_delivery_id')
-            ->where('check_deliveries.converted', false)
-            ->groupBy('check_deliveries.id')
-            ->select('check_deliveries.*')
-            ->orderByRaw('ABS(check_deliveries.amount - ?)', [$amount])
-            ->orderByRaw('ABS(COUNT(check_deliveries_line.id) - ?)', [$count])
-            ->orderByRaw('ABS(julianday(check_deliveries.date) - julianday(?))', [$dateStr])
-            ->get()
-            ->all();
-    }
-
-    private static function parseCurrency(?string $currency): float
-    {
-        if (empty($currency)) {
-            return 0.0;
-        }
-
-        return (float) str_replace(',', '.', (string) preg_replace('/[^-0-9,]/', '', $currency));
-    }
-}
+                    $q2->where('breakdown', 'not like', '%"
