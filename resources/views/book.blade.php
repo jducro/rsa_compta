@@ -222,6 +222,31 @@
           }
         },
       ],
+      drawCallback: function () {
+          let api = this.api();
+          let paginate = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+
+          if (paginate.find('.dt-goto-page').length === 0) {
+              let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle;"></span>');
+              let input = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
+              let label = $('<span> Page </span>');
+
+              input.on('keydown', function (e) {
+                  if (e.key === 'Enter') {
+                      let page = parseInt($(this).val()) - 1;
+                      let totalPages = api.page.info().pages;
+                      if (page >= 0 && page < totalPages) {
+                          api.page(page).draw('page');
+                      }
+                  }
+              });
+
+              wrapper.append(label).append(input);
+              paginate.append(wrapper);
+          }
+
+          paginate.find('.dt-goto-page input').attr('max', api.page.info().pages);
+      },
       initComplete: function () {
         this.api()
             .columns()
@@ -232,6 +257,7 @@
                 // Create input element
                 let input = document.createElement('input');
                 input.placeholder = title;
+                input.value = column.search();
                 column.footer().replaceChildren(input);
 
                 // Event listener for user input
