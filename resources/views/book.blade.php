@@ -259,8 +259,10 @@
             // Create input element
             let input = document.createElement('input');
             input.placeholder = title;
-            input.value = column.search();
             column.footer().replaceChildren(input);
+
+            // Restore saved filter value from state
+            input.value = column.search();
 
             // Event listener for user input
             input.addEventListener('keyup', () => {
