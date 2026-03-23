@@ -13,19 +13,30 @@ final class PaypalImportService
 
         $fileLine = 1;
 
-        while (($line = fgets($handle)) !== false) {
+        while (($rawLine = fgets($handle)) !== false) {
             if ($fileLine++ === 1) {
-                $line = str_getcsv($line, ",");
+                $line = str_getcsv($rawLine, ",");
                 if (count($line) !== 41) {
                     throw new \Exception("Not a Paypal CSV file");
                 }
                 continue;
             }
-            $line = str_getcsv($line, ",");
-            $this->createLine($line)->save();
-            $fees = $this->createFeesLine($line);
-            if ($fees) {
-                $fees->save();
+            $data = str_getcsv($rawLine, ",");
+
+            $mainHash = $this->computeHash($rawLine, 'main');
+            if (!Line::where('import_hash', $mainHash)->exists()) {
+                $main = $this->createLine($data);
+                $main->import_hash = $mainHash;
+                $main->save();
+            }
+
+            $feesHash = $this->computeHash($rawLine, 'fees');
+            if (!Line::where('import_hash', $feesHash)->exists()) {
+                $fees = $this->createFeesLine($data);
+                if ($fees) {
+                    $fees->import_hash = $feesHash;
+                    $fees->save();
+                }
             }
         }
 
@@ -79,6 +90,16 @@ final class PaypalImportService
             return null;
         }
         return $line;
+    }
+
+    /**
+     * Compute a SHA-256 hash over the raw CSV line and a row-type suffix so
+     * that the main line and the fees line produced from the same source row
+     * each get a unique, stable identifier.
+     */
+    private function computeHash(string $rawLine, string $suffix): string
+    {
+        return hash('sha256', $rawLine . $suffix);
     }
 
     private function toFloat(string $value): float
