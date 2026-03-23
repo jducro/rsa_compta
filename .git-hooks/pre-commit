@@ -1,14 +1,16 @@
 #!/bin/sh
-set -e
 PHPCS="vendor/bin/phpcs"
 PHPCBF="vendor/bin/phpcbf"
 PHPSTAN="vendor/bin/phpstan"
-STAGED=$(git diff --cached --name-only --diff-filter=ACM | grep '\.php$' || true)
+
+# Collect staged PHP files as a NUL-delimited list to handle spaces/special chars safely
+STAGED=$(git diff --cached --name-only -z --diff-filter=ACM | grep -z '\.php$')
 if [ -z "$STAGED" ]; then
     exit 0
 fi
+
 echo "Running phpcs / phpcbf on staged PHP files..."
-$PHPCBF --standard=phpcs.xml $STAGED
+printf '%s' "$STAGED" | xargs -0 "$PHPCBF" --standard=phpcs.xml --
 CBFEXIT=$?
 if [ $CBFEXIT -eq 2 ]; then
     echo "phpcbf encountered a fatal error. Aborting commit."
@@ -16,22 +18,25 @@ if [ $CBFEXIT -eq 2 ]; then
 fi
 if [ $CBFEXIT -eq 1 ]; then
     echo "phpcbf fixed some violations; re-staging modified files."
-    git add $STAGED
+    printf '%s' "$STAGED" | xargs -0 git add --
 fi
-$PHPCS --standard=phpcs.xml $STAGED
+
+printf '%s' "$STAGED" | xargs -0 "$PHPCS" --standard=phpcs.xml --
 CSEXIT=$?
 if [ $CSEXIT -ne 0 ]; then
     echo ""
     echo "phpcs found violations that could not be auto-fixed. Please fix them before committing."
     exit 1
 fi
+
 echo "Running phpstan on staged PHP files..."
-$PHPSTAN analyse $STAGED
+printf '%s' "$STAGED" | xargs -0 "$PHPSTAN" analyse --
 STANEXIT=$?
 if [ $STANEXIT -ne 0 ]; then
     echo ""
     echo "phpstan found errors. Please fix them before committing."
     exit 1
 fi
+
 echo "All checks passed."
 exit 0
