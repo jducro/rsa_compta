@@ -70,7 +70,7 @@
       }
       return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(data);
     }
-    $('#book').DataTable({
+    let bookTable = $('#book').DataTable({
       ajax: {
         url: '{{ route('lines') }}',
         type: "POST",
@@ -225,49 +225,50 @@
       drawCallback: function () {
           let api = this.api();
           let paginate = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-
-          if (paginate.find('.dt-goto-page').length === 0) {
-              let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle;"></span>');
-              let input = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
-              let label = $('<span> Page </span>');
-
-              input.on('keydown', function (e) {
-                  if (e.key === 'Enter') {
-                      let page = parseInt($(this).val()) - 1;
-                      let totalPages = api.page.info().pages;
-                      if (page >= 0 && page < totalPages) {
-                          api.page(page).draw('page');
-                      }
-                  }
-              });
-
-              wrapper.append(label).append(input);
-              paginate.append(wrapper);
-          }
-
           paginate.find('.dt-goto-page input').attr('max', api.page.info().pages);
       },
       initComplete: function () {
-        this.api()
-            .columns()
-            .every(function () {
-                let column = this;
-                let title = column.footer().textContent;
+        let api = this.api();
 
-                // Create input element
-                let input = document.createElement('input');
-                input.placeholder = title;
-                input.value = column.search();
-                column.footer().replaceChildren(input);
+        // Add go-to-page input next to pagination
+        let paginate = $(api.table().container()).find('.dataTables_paginate');
+        let wrapper = $('<span class="dt-goto-page" style="margin-left: 10px; vertical-align: middle;"></span>');
+        let gotoLabel = $('<span> Page </span>');
+        let gotoInput = $('<input type="number" min="1" style="width: 60px; margin: 0 4px;" />');
 
-                // Event listener for user input
-                input.addEventListener('keyup', () => {
-                    if (column.search() !== this.value) {
-                        column.search(input.value).draw();
-                    }
-                });
+        gotoInput.on('keydown', function (e) {
+            if (e.key === 'Enter') {
+                let page = parseInt($(this).val()) - 1;
+                let totalPages = api.page.info().pages;
+                if (page >= 0 && page < totalPages) {
+                    api.page(page).draw('page');
+                }
+            }
+        });
+
+        wrapper.append(gotoLabel).append(gotoInput);
+        paginate.append(wrapper);
+        gotoInput.attr('max', api.page.info().pages);
+
+        // Create per-column filter inputs
+        api.columns().every(function () {
+            let column = this;
+            let title = column.footer().textContent;
+
+            // Create input element
+            let input = document.createElement('input');
+            input.placeholder = title;
+            input.value = column.search();
+            column.footer().replaceChildren(input);
+
+            // Event listener for user input
+            input.addEventListener('keyup', () => {
+                if (column.search() !== this.value) {
+                    column.search(input.value).draw();
+                }
             });
-    }
-  });
+        });
+      }
+    });
   </script>
 @endsection
