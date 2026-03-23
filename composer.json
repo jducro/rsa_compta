@@ -41,6 +41,7 @@
         "test": "phpunit",
         "phpcs": "phpcs --standard=phpcs.xml",
         "phpstan": "phpstan analyse",
+        "setup-hooks": "cp .git-hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && echo 'Git hooks installed.'",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
