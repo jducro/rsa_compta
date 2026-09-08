@@ -6,7 +6,7 @@
         "php": "^8.3",
         "doctrine/orm": "^3.6",
         "laravel/framework": "^12.61",
-        "laravel-doctrine/orm": "^3.0",
+        "laravel-doctrine/orm": "^3.3",
         "phpoffice/phpspreadsheet": "^5.9"
     },
     "require-dev": {
