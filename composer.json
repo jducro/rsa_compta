@@ -5,7 +5,7 @@
     "require": {
         "php": "^8.3",
         "doctrine/orm": "^3.7",
-        "laravel/framework": "^12.61",
+        "laravel/framework": "^13.40",
         "laravel-doctrine/orm": "^3.3",
         "phpoffice/phpspreadsheet": "^5.10"
     },
